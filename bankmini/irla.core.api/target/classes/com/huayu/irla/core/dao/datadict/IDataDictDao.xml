@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.datadict.IDataDictDao">
+	<!-- <cache type="org.mybatis.caches.ehcache.LoggingEhcache" /> -->
+
+	<select id="getValue" parameterType="com.huayu.irla.core.datadict.vo.DataDictVO"
+		resultType="com.huayu.irla.core.datadict.vo.DataDictVO">
+		SELECT
+			ut.id as id ,
+			ut.dictionary_key as dictionaryKey ,
+			ut.dictionary_value as dictionaryValue ,
+			ut.created_by as createdBy ,
+			ut.creation_date as creationDate ,
+			ut.last_updated_by as lastUpdatedBy ,
+			ut.last_update_date as lastUpdateDate ,
+			ut.is_valid as isValid ,
+			ut.description as description,
+			ut.data_switch as dataSwitch
+		FROM
+			sys_data_dictionary_t ut
+		WHERE
+			1 = 1
+		<if test="datadict.id!=null and datadict.id!=''">
+			and ut.id = #{datadict.id}
+		</if>
+		<if test="datadict.dictionaryKey!=null and datadict.dictionaryKey!=''">
+			and ut.dictionary_key like CONCAT('%',#{datadict.dictionaryKey},'%')
+		</if>
+		<if test="datadict.description!=null and datadict.description!=''">
+			and ut.description like CONCAT('%',#{datadict.description},'%')
+		</if>
+		ORDER BY
+		ut.id DESC
+		<if test="datadict.offset!=null and datadict.limit !=null">
+			LIMIT
+			#{datadict.offset,jdbcType=INTEGER},#{datadict.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+
+	<select id="getValueByKey" resultType="com.huayu.irla.core.datadict.vo.DataDictVO"
+		parameterType="com.huayu.irla.core.datadict.vo.DataDictVO">
+		SELECT
+			ut.id as id ,
+			ut.dictionary_key as dictionaryKey ,
+			ut.dictionary_value as dictionaryValue ,
+			ut.created_by as createdBy ,
+			ut.creation_date as creationDate ,
+			ut.last_updated_by as lastUpdatedBy ,
+			ut.last_update_date as lasUpdateDate ,
+			ut.is_valid as isValid ,
+			ut.description as description
+		FROM
+			sys_data_dictionary_t ut
+		WHERE
+			ut.dictionary_key = #{datadict.dictionaryKey}
+	</select>
+
+	<select id="getValueByDesc" resultType="com.huayu.irla.core.datadict.vo.DataDictVO"
+		parameterType="com.huayu.irla.core.datadict.vo.DataDictVO">
+		SELECT
+			ut.id as id ,
+			ut.dictionary_key as dictionaryKey ,
+			ut.dictionary_value as dictionaryValue ,
+			ut.created_by as createdBy ,
+			ut.creation_date as creationDate ,
+			ut.last_updated_by as lastUpdatedBy ,
+			ut.last_update_date as lasUpdateDate ,
+			ut.is_valid as isValid ,
+			ut.description as description
+		FROM
+			sys_data_dictionary_t ut
+		WHERE
+			ut.description = #{datadict.description}
+	</select>
+
+
+	<select id="getCount" resultType="int"
+		parameterType="com.huayu.irla.core.datadict.vo.DataDictVO">
+		select count(1) from sys_data_dictionary_t ut
+		WHERE
+			1 = 1
+		<if test="datadict.id!=null and datadict.id!=''">
+			and ut.id = #{datadict.id}
+		</if>
+		<if test="datadict.dictionaryKey!=null and datadict.dictionaryKey!=''">
+			and ut.dictionary_key like CONCAT('%',#{datadict.dictionaryKey},'%')
+		</if>
+		<if test="datadict.description!=null and datadict.description!=''">
+			and ut.description like CONCAT('%',#{datadict.description},'%')
+		</if>
+	</select>
+
+
+
+	<insert id="addDataDict" parameterType="com.huayu.irla.core.datadict.vo.DataDictVO">
+		INSERT INTO sys_data_dictionary_t
+			(
+			dictionary_key ,
+			dictionary_value ,
+			created_by ,
+			creation_date ,
+			last_updated_by ,
+			last_update_date ,
+			is_valid ,
+			description,
+			data_switch  
+			)
+		VALUES
+			(
+			#{dictionaryKey},
+			#{dictionaryValue},
+			#{createdBy},
+			SYSDATE(),
+			#{createdBy},
+			SYSDATE(),
+			'1',
+			#{description},
+			#{dataSwitch}
+			);
+	</insert>
+
+	<update id="updateDataDict" parameterType="com.huayu.irla.core.datadict.vo.DataDictVO">
+		UPDATE sys_data_dictionary_t
+		SET
+			dictionary_key =#{dictionaryKey},
+			dictionary_value =#{dictionaryValue},
+			<if test="isValid !=null">
+				is_valid =#{isValid},
+			</if>
+			last_updated_by =#{lastUpdatedBy},
+			last_update_date = SYSDATE(),
+			description =#{description}
+		WHERE
+			id = #{id}
+	</update>
+
+</mapper> 

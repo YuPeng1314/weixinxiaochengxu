@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.theme.IThemeDao">
+	<select id="getThemeList" parameterType="com.huayu.irla.core.theme.vo.ThemeVO" resultType="com.huayu.irla.core.theme.vo.ThemeVO">
+		SELECT
+		  id AS Id,
+		  theme_code AS themeCode,
+		  theme_name AS themeName,
+		  theme_img AS themeImg,
+		  is_valid AS isValid,
+		  created_by AS createdBy,
+		  creation_date AS creationDate,
+		  last_updated_by AS lastUpdatedBy,
+		  last_update_date AS lastUpdateDate,
+		  description AS description
+		FROM irla_theme_t
+		WHERE 1=1
+		<if test="theme.Id != null and theme.Id != '' ">
+			AND id = #{theme.Id}
+		</if>
+		<if test="theme.themeCode != null and theme.themeCode != '' ">
+			AND theme_code = #{theme.themeCode}
+		</if>
+		<if test="theme.themeName != null and theme.themeName != '' ">
+			AND theme_name like  CONCAT('%',#{theme.themeName},'%')
+		</if>
+		<if test="theme.isValid != null and theme.isValid != '' ">
+			AND is_valid = #{theme.isValid}
+		</if>
+		ORDER BY id
+		<if test="theme.offset!=null and theme.limit !=null">
+			LIMIT
+			#{theme.offset,jdbcType=INTEGER},#{theme.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="getThemeCount" resultType="int" parameterType="com.huayu.irla.core.theme.vo.ThemeVO">
+		SELECT
+		  COUNT(1)
+		FROM irla_theme_t
+		WHERE 1 = 1
+		<if test="theme.isValid != null and theme.isValid != '' ">
+			AND is_valid = #{theme.isValid}
+		</if>
+	</select>
+	<insert id="addTheme" parameterType="com.huayu.irla.core.theme.vo.ThemeVO">
+		INSERT INTO irla_theme_t 
+		            (theme_code,
+		             theme_name,
+		             theme_img,
+		             is_valid,
+		             created_by,
+		             creation_date,
+		             last_updated_by,
+		             last_update_date,
+		             description)
+		VALUES ((CONCAT('T', CAST(nextval('theme_code') AS CHAR))),
+		        #{theme.themeName},
+		        #{theme.themeImg},
+		        #{theme.isValid},
+		        #{theme.createdBy},
+		        SYSDATE(),
+		        #{theme.lastUpdatedBy},
+		        SYSDATE(),
+		        #{theme.description})
+	</insert>
+	<update id="updateTheme" parameterType="com.huayu.irla.core.theme.vo.ThemeVO">
+		UPDATE irla_theme_t
+		SET theme_name = #{theme.themeName},
+		<if test="theme.themeImg != null and theme.themeImg != '' ">
+			theme_img = #{theme.themeImg},
+		</if>
+			is_valid = #{theme.isValid},
+			last_updated_by = #{theme.lastUpdatedBy},
+			last_update_date = SYSDATE(),
+			description = #{theme.description}
+		WHERE id = #{theme.Id}
+		OR theme_code = #{theme.themeCode}
+	</update>
+	<delete id="delTheme" parameterType="int">
+		DELETE
+		FROM irla_theme_t
+		WHERE id =#{theme.Id} 
+	</delete>
+</mapper>

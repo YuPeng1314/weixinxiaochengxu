@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.user.IWxUserInfoDao">
+	<insert id="addUserInfo" parameterType="com.huayu.irla.core.user.vo.WxUserInfoVO">
+		INSERT INTO irla_wx_userinfo_t 
+			(
+			user_code, 
+			user_nkname, 
+			user_img, 
+			area_info, 
+			user_name, 
+			user_sex, 
+			user_work, 
+			user_long_status, 
+			longitude, 
+			latitude,
+			country, 
+	        province, 
+	        city
+			)
+			VALUES
+			(
+			#{userInfoVO.user_code}, 
+			#{userInfoVO.user_nkname}, 
+			#{userInfoVO.user_img}, 
+			#{userInfoVO.area_info}, 
+			#{userInfoVO.user_name}, 
+			#{userInfoVO.user_sex}, 
+			#{userInfoVO.user_work}, 
+			#{userInfoVO.user_long_status}, 
+			#{userInfoVO.longitude}, 
+			#{userInfoVO.latitude},
+			#{userInfoVO.country}, 
+			#{userInfoVO.province},
+			#{userInfoVO.city}
+			)
+	</insert>
+	
+	<insert id="addUserFriend" parameterType="com.huayu.irla.core.user.vo.WxUserFriendResVO">
+			INSERT INTO irla_wx_userfriend_relation_t 
+			(
+			user_code, 
+			user_friend_code
+			)
+			VALUES
+			(
+			#{userFriendVO.user_code}, 
+			#{userFriendVO.user_friend_code}
+			);
+	</insert>
+	
+	<select id="getUserMayKnowInfo" parameterType="com.huayu.irla.core.user.vo.WxUserInfoVO" resultType="com.huayu.irla.core.user.vo.WxUserInfoVO">
+	    SELECT 
+	    a.user_id                   as  user_id,
+	    a.user_code                 as  user_code,
+	    a.user_nkname               as  user_nkname,
+	    a.user_img                  as  user_img,
+	    a.area_info                 as  area_info,
+	    a.user_name                 as  user_name,
+	    a.user_sex                  as  user_sex,
+	    a.user_work                 as  user_work,
+	    a.user_long_status          as  user_long_status,
+	    a.longitude                 as  longitude,
+	    a.latitude                  as  latitude
+	    FROM 
+	    irla_wx_userinfo_t a
+	    WHERE
+	    <if test=" userInfoVO.isQuery =='0'.toString() or userInfoVO.isQuery =='1'.toString() ">
+	    not exists(
+        select 1 from irla_wx_userfriend_relation_t b where a.user_code = b.user_friend_code)
+        AND
+	    a.user_code != #{userInfoVO.user_code}
+	    <if test="userInfoVO.isQuery =='0'.toString()">
+		AND
+	    a.longitude &gt;= #{userInfoVO.minlng}
+        AND 
+        a.longitude &lt;= #{userInfoVO.maxlng}
+        AND 
+        a.latitude &gt;= #{userInfoVO.minlat}
+        AND 
+        a.latitude &lt;= #{userInfoVO.maxlat}
+		</if>
+		ORDER BY 
+		RAND() 
+		LIMIT 
+		5
+		</if>
+		<if test=" userInfoVO.isQuery =='2'.toString()">
+		a.user_code = #{userInfoVO.user_code}
+		</if>
+	</select>
+	
+	<select id="getUserFriendInfo" parameterType="com.huayu.irla.core.user.vo.WxUserFriendResVO" resultType="com.huayu.irla.core.user.vo.WxUserFriendResVO">
+	    SELECT 
+	    a.user_res_id                    as  user_res_id,
+	    a.user_code                      as  user_code,
+	    a.user_friend_code               as  user_friend_code
+	    FROM 
+	    irla_wx_userfriend_relation_t a
+	    WHERE
+	    a.user_code = #{userFriend.user_code}
+	</select>
+	
+</mapper>

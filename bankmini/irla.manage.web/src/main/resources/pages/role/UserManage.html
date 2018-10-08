@@ -1,0 +1,314 @@
+<script src="/ietlAdmin/js/role/role.js"></script> 
+<script type="text/javascript">
+	$(function() {
+		/*  $("#addManage").hide();
+		 $("#uploadUsers").hide();  */
+		role.initTable();
+		$('.form_date').datetimepicker({
+	        language:  'zh-CN',
+	        weekStart: 1,
+	        todayBtn:  1,
+			autoclose: 1,
+			todayHighlight: 1,
+			startView: 2,
+			minView: 2,
+			pickerPosition: "bottom-left",
+			forceParse: 0
+	    });
+		var t = new Date();
+		var newDate = t.format("yyyy-MM-dd");
+	    $('.form_date').datetimepicker('setEndDate', newDate);
+		$('.form_date')
+ 	    .on('changeDate', function (e) {
+ 	    	$('#addUserForm').data('bootstrapValidator').updateStatus('dateOfBirth', 'NOT_VALIDATED', null)
+ 	        .validateField('dateOfBirth');
+ 	   }); 
+	});
+</script>
+
+
+<BODY>
+<!-- <input id= "plateFormType" name="plateFormType" type="hidden"> -->
+<!-- <input id= "addUserType" name="addUserType" type="hidden"> -->
+
+<form id="searchFrom" class="form-horizontal" role="form">
+	<div class="form-group">
+	        <label class="col-sm-1" style="width: auto; margin-top: 6px">账号</label>
+			<div class="col-sm-2">
+				<input type="text" class="form-control" name="userCode"
+					id="userCode" placeholder="请输入...."/>
+			</div>
+			<label class="col-sm-1" style="width: auto; margin-top: 6px">姓名</label>
+			<div class="col-sm-2">
+				<input type="text" class="form-control" name="userName"
+					id="userName_search" placeholder="请输入...."/>
+			</div>
+			</div>
+			<div class="form-group">
+			<label class="col-sm-1" style="width: auto; margin-top: 6px">性别</label>
+			<div class="col-sm-2">
+			<select type="select" class="form-control" id="sex" name="sex">
+				 <option value ="">--请选择--</option>
+				  <option value ="1">男</option>
+				  <option value ="0">女</option>
+				</select>
+			</div>
+			<div class=" col-sm-3"> <input type="button"
+				class="btn btn-primary " id="search" onclick="role.searchBtn()"
+				value="查询" /> <input type="button"
+				class="btn btn-primary " id="empty" onclick="role.empty()"
+				value="清空" />
+				<input  class="btn btn-warning privilege-hints" pri_url="/ws/addUser" type="button"
+				onclick="role.showModel()" value="添加用户" />
+				<!-- <input id="uploadUsers"  class="btn btn-info privilege-hints" pri_url="/ws/addUser" type="button"
+				onclick="role.showModel(1)" value="添加管理员" /> -->
+			</div>
+			<!-- <div  class=" col-sm-3">
+				<input class="btn btn-success privilege-hints"  pri_url="/ws/uploadMoreUser" type="button"
+				onclick="role.uploadMoreUser()" value="导入用户" />
+				<a class="privilege-hints" pri_url="/ws/uploadMoreUser" style="margin-left:15px" href="/ietlAdmin/template/在线用户导入模板.xlsx">用户导入模板下载</a>
+			</div> -->
+	</div>
+</form>
+
+
+<table id="role_table">
+  <style>  
+     body{
+	padding:100px;}  
+#omitShow{
+	position:relative;
+	display:inline-block;}
+#omitShow:hover:before{
+	content:attr(data-tooltip)/*鼠标经过后出现的标签*/;
+	background:#FF8000; 
+	color:#fff;
+	padding:.1em 1em;
+	position:absolute;
+	left:100%;
+	top:70%;
+	margin-left:14px;
+	white-space:pre;/*文字不换行*/}
+#omitShow:hover:after{
+	content:"";
+	position:absolute;
+	left:108%;
+	top:100%;
+	width:0;
+	height:0;
+	border-right:8px solid #FF8000;
+	border-top:8px solid transparent;
+	border-bottom:8px solid transparent; /*三角形的写法*/}		
+</style>
+    
+</table>
+
+
+<div id="addUserModal" class="modal fade" data-backdrop="static" role="dialog">
+	<div class="modal-dialog" style="width: 800px; height: 800px">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">人员维护</h4>
+			</div>
+			<div class="modal-body">
+
+				<form class="form-horizontal" role="form" id="addUserForm">
+					<input id="id" name="id" type="text" style="display: none">
+					<input id= "interim_Code" name="interimCode" type="hidden">
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="name">用户账号<font
+								color="red">&ensp;*</font></label>
+							<div class="col-sm-3">
+								<input type="text" class="form-control" id="user_code"
+									name="userCode" placeholder="请输入用户账号">
+
+							</div>
+							<label class="col-sm-2 control-label" for="name">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名<font
+								color="red">&ensp;*</font></label>
+							<div class="col-sm-3">
+								<input type="text" class="form-control" id="user_name"
+									name="userName" placeholder="请输入姓名">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="name">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别<font
+								color="red">&ensp;*</font></label>
+							<div class="col-sm-3">
+								<select type="select" class="form-control" id="sex" name="sex">
+									<option value="">-- 选择性别 --</option>
+									<option value="1">男</option>
+									<option value="0">女</option>
+								</select>
+							</div>
+
+							<label for="dtp_input2" class="col-sm-2 control-label" for="name">出生日期<font color="red">&ensp;*</font></label>
+							<div class="col-sm-3">
+								<div class="input-group date form_date " data-date=""
+									data-date-format="yyyy-mm-dd" data-link-field="dtp_input2"
+									data-link-format="yyyy-mm-dd">
+									<input size="16" type="text" class="form-control"
+										id="date_of_birth" name="dateOfBirth" value="" readonly>
+									<!-- <span class="input-group-addon"><span class="glyphicon glyphicon-trash"></span></span> -->
+									<span class="input-group-addon"><span
+										class="glyphicon glyphicon-calendar"></span></span>
+								</div>
+							</div>
+							<input type="hidden" id="dtp_input2" value="" />
+						</div>
+
+
+                      <!--  <div id = "adminManage">
+                       <div id = "attestation">
+						<div class="form-group ">
+							<label class="col-md-2 control-label" for="name">是否认证&nbsp;&nbsp;&nbsp;</label>
+							<div class="col-md-4">
+								<input type="checkbox" id="check_box" value=""
+									onclick="role.radio()" style="margin-top: 11px;" />（点击勾选用户机构认证）
+								<input id="is_authentication" name="isAuthentication" type="hidden">
+							</div>
+						</div>
+
+
+                   机构认证
+					<div id="cerAuDiv">
+                 	<div class="form-group">
+                 	<label class="col-sm-2 control-label" for="name">认证机构<font color="red">&ensp;*</font></label>
+						<div class="col-sm-6">
+								<input type="text" class="form-control" id="certification_authority"
+									name="certificationAuthority" placeholder="请输入认证机构名称">
+							</div>
+					</div>
+					</div>
+					</div>
+					
+					<div class="form-group">
+							<label class="col-sm-2 control-label" for="name">选择平台<font
+								color="red">&ensp;*</font></label>
+							<div class="col-sm-4">
+								<select type="select" id="plateform_code"
+									name="plateformCode" class=" selectpicker form-control"
+									data-live-search="true" title="---请选择平台--- ">
+								</select>
+							</div>
+						</div>
+						</div>
+					
+					<div id = "depaShow">			
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="name">选择部门<font color="red">&ensp;*</font></label> 
+						<div class="col-md-4">
+						<div style="width: 300px">
+							<div class="input-group clearCircle">
+								<input id="department_name" name="departmentName" type="text" class="form-control clearCircle" readonly="readonly"> <span class="input-group-btn">
+									<button id="choseDepa" class="btn btn-default clearCircle" type="button" disabled="disabled">
+										<span class="glyphicon glyphicon-chevron-down"></span>
+									</button>
+								</span>
+							</div>
+							<input type="hidden" id="department_Code" name="departmentCode">
+							<div id="treeDepa" style="display: none; width: 300px; z-index: 1000; position: absolute;"></div>
+						</div>
+					    </div>
+				    </div>
+				    </div> -->
+					
+					
+					  <div class="form-group ">
+						<label class="col-sm-2 control-label" for="name" >选择城市&nbsp;&nbsp;&nbsp;</label>
+						<div class="col-sm-6">
+						<div class="input-group">
+						<input id= "province" name="province"  type="hidden">
+						<input id= "town" name="town"  type="hidden">
+						<input id= "district" name="district"  type="hidden">
+						 <input type="text" class=" form-control " id="address_Btn" name="addressBtn" readonly value="">
+							<div type = "button" class="ico_a input-group-addon btn btn-primary" id="showAddressBtn" name="showAddressBtn" onclick="showAddress()">选择</div>
+						</div>
+						
+						<div id="addressContent" class="addressContent"
+							style="display: none; position: absolute; z-index :10">
+							<select type="select" id = "prov" class="prov"  ></select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						 <select type="select" class="city" id = "city"   disabled="disabled"></select> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                         <select type="select" class="dist" id = "dist"   disabled="disabled"></select> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                         <input  id = "addressSave" type="button" class="btn btn-success btn-sm" value = "确定" onclick="role.addressSave()">
+						</div>
+						</div>
+					</div>
+						
+					<div class="form-group ">
+						<label class="col-sm-2 control-label" for="name" >详细地址&nbsp;&nbsp;&nbsp;</label>
+						<div class="col-sm-10">
+						<textarea type="textarea" class="form-control" style = "resize:none;" id="residential_address"
+							name="residentialAddress" placeholder="请输入详细地址"></textarea>
+							</div>
+							</div>
+
+					
+					<div class="form-group">
+						<label class="col-sm-2 control-label" for="name">描&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;述&nbsp;&nbsp;&nbsp;</label>
+						<div class="col-sm-10" >
+						<textarea type="textarea" class="form-control" style = "resize:none;" id="description" name="description" placeholder="请输入描述"></textarea>
+					</div>
+					</div>
+					
+					</table>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary"
+					onclick="role.addUser()">确定</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+<div id="uploadUserModal" class="modal fade" data-backdrop="static" role="dialog">
+	<div class="modal-dialog" style="width: 800px; height: 800px">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">导入用户</h4>
+			</div>
+			<div class="modal-body">
+			<form id="uploadUserForm" role="form" enctype="multipart/form-data" class="form-horizontal">
+					
+					<div class="form-group">
+							<label class="col-sm-2 control-label" for="name">选择平台<font
+								color="red">&ensp;*</font></label>
+							<div class="col-sm-4">
+								<select type="select" id="plateform_code_up"
+									name="plateformCode" class=" selectpicker form-control"
+									data-live-search="true" title="---请选择平台--- ">
+								</select>
+							</div>
+					</div>
+					
+					<div class="form-group">
+                 	<label class="col-sm-2 control-label" for="name">文件上传<font color="red">&ensp;*</font></label>
+						<div class="col-sm-8">
+								<input id="user_upload" name="files" type="file"
+									class="file-loading" >
+									<font color="red">("格式要求:xls,xlsx")</font>
+						</div>
+					</div>
+					
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" onclick="role.uploadUser()">确定</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+</BODY>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+    PUBLIC "-//mybatis.org/DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="lazyLoadingEnabled" value="false"/>
+		<setting name="logImpl" value="LOG4J" />
+	</settings>
+	<typeAliases>
+		<typeAlias alias="nodeMenuVO" type="com.huayu.irla.core.menu.vo.NodeMenuVO"/>
+		<typeAlias alias="dataDictVO" type="com.huayu.irla.core.datadict.vo.DataDictVO"/>
+		<typeAlias alias="operationLogVO" type="com.huayu.irla.core.operationlog.vo.OperationLogVO"/>
+		<typeAlias alias="sysLoginoutVO" type="com.huayu.irla.privilege.manage.vo.SysLoginoutVO"/>
+		<typeAlias alias="categoryVO" type="com.huayu.irla.core.category.vo.CategoryVO"/>
+		<typeAlias alias="courseVO" type="com.huayu.irla.core.course.vo.CourseVO"/>
+	</typeAliases>
+	<mappers>
+		<!-- <mapper resource="com/huayu/ietl/dao/IUserScanFileDao.xml"/> -->
+	</mappers>
+</configuration>

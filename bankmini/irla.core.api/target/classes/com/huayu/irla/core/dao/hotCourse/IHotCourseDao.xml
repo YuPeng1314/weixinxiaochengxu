@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.hotCourse.IHotCourseDao">
+	<select id="getHotCourseList" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO" resultType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		SELECT
+		  a.course_code   AS courseCode,
+		  a.course_name   AS courseName,
+		  a.course_img    AS courseImg,
+		  a.category_code AS categoryCode,
+  		  c.category_name AS categoryName,
+		  IFNULL(visitNum,0) AS courseVisitNum
+		FROM irla_courseware_t a
+		  LEFT JOIN (SELECT course_code,SUM(visit_num) AS visitNum FROM irla_resource_visit_t GROUP BY course_code) b
+		    ON a.course_code = b.course_code
+		  LEFT JOIN irla_category_t c
+		    ON a.category_code = c.category_code
+		ORDER BY courseVisitNum DESC
+		<if test="course.offset!=null and course.limit !=null">
+			LIMIT
+			#{course.offset,jdbcType=INTEGER},#{course.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="getHotCourseCount" resultType="int">
+		SELECT
+		  COUNT(1)
+		FROM (SELECT
+		        id
+		      FROM irla_resource_visit_t
+		      GROUP BY course_code) a
+	</select>
+</mapper>

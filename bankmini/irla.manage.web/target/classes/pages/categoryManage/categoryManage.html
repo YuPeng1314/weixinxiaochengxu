@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>类别管理</title>
+<link href="/ietlAdmin/css/categoryManage.css" rel="stylesheet" type="text/css">
+<script src="/ietlAdmin/js/categoryManage/categoryManage.js"></script>
+<style type="text/css" rel="stylesheet">
+.lable{
+	float: left;
+    width: 25%;
+    height: 56px;
+    line-height: 56px;
+}
+.col-sm-6{
+	width: 75%
+}
+.col-sm-6>i{
+	top: 10px;
+	right: 25px;
+}
+</style>
+</head>
+<body>
+	<input type="text" id="categoryCode" style="display: none">
+	<input type="text" id="categoryID" value="0" style="display: none">
+	<form id="searchFrom" class="form-horizontal" role="form">
+		<div class="form-group container">
+			<div class="row">
+				<label class="col-sm-2" style="width: auto; margin-top: 6px" for=""><span id="searchSpan">类&nbsp;&nbsp;别&nbsp;&nbsp;名&nbsp;&nbsp;称</span>:</label>
+				<div class="col-sm-2">
+					<input type="text" class="form-control" name="" id="catalogNameSrh" placeholder="请输入....">
+				</div>
+				<div class="col-sm-4">
+					<input type="button" class="btn btn-primary" id="search" onclick="categorymanage.categoryTable();" value="查询" />
+					<input type="button" class="btn btn-primary" id="empty" onclick="categorymanage.emptySearch()" value="清空" /> 
+					<input type="button" class="btn btn-info" onclick="" value="新增类别" id="addDomain" />
+				</div>
+			</div>
+		</div>
+		<input type="text" value="解决bootstrap与AJAX异步提交表单的冲突" hidden />
+		<div id="cataCount" style="display: inline">
+			<div style="margin-bottom: 10px">
+				&ensp;当前总数为：<font id="typeCount" color="red"></font>
+			</div>
+		</div>
+	</form>
+<table id="typemanege_table"></table>
+<!-- 图片维护 -->
+<div id="areaImgModal" class="modal fade" data-backdrop="static" role="dialog">
+	<div class="modal-dialog" style="width: 800px; height: 800px">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">图片维护</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal" role="form" id="areaImgForm">
+					<input id="id_img" name="id" type="text" style="display: none">
+					<div class="form-group">
+						<label class="col-sm-2 control-label"  for="name">类别图片<font color="red">&ensp;*</font></label> 
+						<div class="col-sm-6" id="imgUploadDivId">
+			       			<input id="img_upload" name="files" type="file" class="file-loading">
+			       			<font color="red">&nbsp;&nbsp;(仅支持jpg,png格式)</font>
+				       	</div>
+				       	<div class="col-sm-6" id="viewImgId">
+				       		<img  id="testimgname" src=""  class="kv-preview-data file-preview-image" style="width:auto;height:100px;">
+				       		&nbsp;&nbsp;<button id="delImgText" class="btn btn-danger btn-xs" title="点此更换图片" onclick="categorymanage.initUploadImg()" style="vertical-align:top"></button>
+				       	</div></br>
+				       	<span id="remarkImgId" style="display: none"></span>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" onclick="categorymanage.uploadEqpImg()">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 新增 -->
+<div id="addCatalogModal" class="modal fade" data-backdrop="static" role="dialog">
+	<div class="modal-dialog" style="width: 800px; height: 800px">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">添加类别</h4>
+			</div>
+			<div class="modal-body">
+				<form role="form" class="form-horizontal" id="addCourseForm">
+					<table class="addtable">
+						<tr>
+							<td>
+								<div class="form-group">
+									<label class="lable">类别名称&nbsp;*</label>
+									<div class="col-sm-6">
+										<input type="text" class="form-control" id="addcategoryName" name="addcategoryName">
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="form-group">
+									<label class="lable">父级类别名称&nbsp;*</label>
+									<div class="col-sm-6">
+										<select type="select" class=" form-control" id="addparentCode" name="addparentCode">
+										</select> 
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="form-group">
+									<label class="lable">序列号</label>
+									<div class="col-sm-6">
+										<input type="number" class="form-control" id="addsequenceNumber" name="addsequenceNumber">
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="form-group">
+									<label class="lable">描述</label>
+									<div class="col-sm-6">
+										<input type="textarea" class="form-control" id="adddescription" name="adddescription">
+									</div>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick="categorymanage.addcategory();">确定</button>
+				<button type="button" class="btn btn-default" onclick="categorymanage.addempty()">清空</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+<!-- 修改 -->
+<div id="updateCatalogModal" class="modal fade" data-backdrop="static" role="dialog">
+	<div class="modal-dialog" style="width: 800px; height: 800px">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">类别修改</h4>
+			</div>
+			<div class="modal-body">
+				<form role="form" class="form-horizontal" id="updateCourseForm">
+					<input id="categoryCode" name="category_code" type="text" style="display: none">
+					<table class="updatetable">
+						<tr>
+							<td>
+								<div class="form-group">
+									<label class="lable">类别名称&nbsp;*</label>
+									<div class="col-sm-6">
+										<input type="text" class="form-control" id="updatecategoryName" name="updatecategoryName">
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="form-group">
+									<label class="lable">父级类别名称&nbsp;*</label>
+									<div class="col-sm-6">
+										<select type="select" class=" form-control" id="updateparentCode" name="updateparentCode">
+										</select> 
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="form-group">
+									<label class="lable">序列号</label>
+									<div class="col-sm-6">
+										<input type="number" class="form-control" id="updatesequenceNumber" name="updatesequenceNumber">
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="form-group">
+									<label class="lable">描述</label>
+									<div class="col-sm-6">
+										<input type="textarea" class="form-control" id="updatedescription" name="updatedescription">
+									</div>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="updatebtn" onclick="categorymanage.updatecategoy()">确定</button>
+				<button type="button" class="btn btn-default" onclick="categorymanage.emptyupdate()">清空</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+</body>
+</html>

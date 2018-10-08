@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.statistics.IStatisticsDao">
+	<select id="getResStatisticsList" parameterType="com.huayu.irla.core.statistics.vo.StatisticsVO" resultType="com.huayu.irla.core.statistics.vo.StatisticsVO">
+		SELECT
+		  r.resource_code AS resourceCode,
+		  r.resource_name AS resourceName,
+		  r.course_code   AS courseCode,
+		  c.course_name   AS courseName,
+		  IFNULL(v.visit_num, 0) AS resVisitNum,
+		  IFNULL(s.share_num, 0) AS resShareNum,
+		  IFNULL(cl.resCollectNum, 0) AS resCollectNum
+		FROM irla_resource_t r
+		  LEFT JOIN irla_courseware_t c
+		    ON r.course_code = c.course_code
+		  LEFT JOIN irla_resource_visit_t v
+		    ON r.resource_code = v.resource_code
+		  LEFT JOIN (SELECT
+		               resource_code,
+		               COUNT(1)         AS resCollectNum
+		             FROM irla_res_user_collect_t
+		             GROUP BY resource_code) cl
+		    ON r.resource_code = cl.resource_code
+		  LEFT JOIN irla_resource_share_t s
+		    ON r.resource_code = s.resource_code
+		WHERE 1=1
+		<if test="statistics.resourceName != null and statistics.resourceName != ''">
+			AND r.resource_name like CONCAT('%',#{statistics.resourceName},'%')
+		</if>
+		<if test="statistics.courseName != null and statistics.courseName != ''">
+			OR c.course_name like CONCAT('%',#{statistics.courseName},'%')
+		</if>
+		ORDER BY resVisitNum DESC
+		<if test="statistics.offset!=null and statistics.limit !=null">
+			LIMIT
+			#{statistics.offset,jdbcType=INTEGER},#{statistics.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="getResStatisticsCount" parameterType="com.huayu.irla.core.statistics.vo.StatisticsVO" resultType="int">
+		SELECT
+		  COUNT(1)
+		FROM irla_resource_t r
+		  LEFT JOIN irla_courseware_t c
+		    ON r.course_code = c.course_code
+		WHERE 1=1
+		<if test="statistics.resourceName != null and statistics.resourceName != ''">
+			AND r.resource_name like CONCAT('%',#{statistics.resourceName},'%')
+		</if>
+		<if test="statistics.courseName != null and statistics.courseName != ''">
+			OR c.course_name like CONCAT('%',#{statistics.courseName},'%')
+		</if>
+	</select>
+	
+	<select id="getCourseStatisticsList" parameterType="com.huayu.irla.core.statistics.vo.StatisticsVO" resultType="com.huayu.irla.core.statistics.vo.StatisticsVO">
+		SELECT
+		  c.course_code AS courseCode,
+		  c.course_name AS courseName,
+		  IFNULL(v.courseVisitNum, 0) AS courseVisitNum,
+		  IFNULL(cl.courseCollectNum, 0) AS courseCollectNum,
+		  IFNULL(s.courseShareNum, 0) AS courseShareNum
+		FROM irla_courseware_t c
+		  LEFT JOIN (SELECT
+		               course_code,
+		               SUM(visit_num) AS courseVisitNum
+		             FROM irla_resource_visit_t
+		             GROUP BY course_code) v
+		    ON c.course_code = v.course_code
+		  LEFT JOIN (SELECT
+		               course_code,
+		               COUNT(1)       AS courseCollectNum
+		             FROM irla_res_user_collect_t
+		             GROUP BY course_code) cl
+		    ON c.course_code = cl.course_code
+		  LEFT JOIN (SELECT
+		               course_code,
+		               SUM(share_num) AS courseShareNum
+		             FROM irla_resource_share_t
+		             GROUP BY course_code) s
+		    ON s.course_code = cl.course_code
+		WHERE 1 = 1
+		<if test="statistics.courseName != null and statistics.courseName != ''">
+			AND c.course_name like CONCAT('%',#{statistics.courseName},'%')
+		</if>
+		ORDER BY courseVisitNum DESC 
+		<if test="statistics.offset!=null and statistics.limit !=null">
+			LIMIT
+			#{statistics.offset,jdbcType=INTEGER},#{statistics.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="getCourseStatisticsCount" parameterType="com.huayu.irla.core.statistics.vo.StatisticsVO" resultType="int">
+		SELECT
+		  COUNT(1)
+		FROM irla_courseware_t c
+		WHERE 1=1
+		<if test="statistics.courseName != null and statistics.courseName != ''">
+			AND c.course_name like CONCAT('%',#{statistics.courseName},'%')
+		</if>
+	</select>
+</mapper>

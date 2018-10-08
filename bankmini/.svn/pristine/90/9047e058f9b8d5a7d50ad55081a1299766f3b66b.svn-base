@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户信息</title>
+<script src="/ietlAdmin/js/userInfo/userInfo.js"></script>
+</head>
+<body>
+	<form id="searchFrom" class="form-horizontal" role="form">
+		<div class="form-group container">
+			<div class="row">
+				<label class="col-sm-2" style="width: auto; margin-top: 6px" for=""><span id="searchSpan">搜索</span>:</label>
+				<div class="col-sm-2">
+					<input type="text" class="form-control" name="" id="userNameSrh" placeholder="请输入....">
+				</div>
+				<div class="col-sm-4">
+					<input type="button" class="btn btn-primary" id="search" onclick="userInfoManage.initTable();" value="查询" />
+					<input type="button" class="btn btn-primary" id="empty" onclick="userInfoManage.emptySearch()" value="清空" /> 
+				</div>
+			</div>
+		</div>
+		<input type="text" value="解决bootstrap与AJAX异步提交表单的冲突" hidden />
+	</form>
+	<table id="typemanege_table"></table>
+</body>
+</html>

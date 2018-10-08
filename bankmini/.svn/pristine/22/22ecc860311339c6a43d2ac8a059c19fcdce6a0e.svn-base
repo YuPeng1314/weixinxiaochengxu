@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.comment.ICommentDao">
+	<select id="findComment" parameterType="com.huayu.irla.core.comment.vo.CommentVO" resultType="com.huayu.irla.core.comment.vo.CommentVO">
+		SELECT
+		  id            AS id,
+		  `comment`     AS `comment`,
+		  resource_code AS resourseCode,
+		  `user_code`   AS userCode,
+		  photo         AS photo,
+		  creation_date AS creationDate
+		FROM irla_comment
+		WHERE 1=1
+		<if test="comt.resourseCode != null and comt.resourseCode != ''">
+			AND resource_code = #{comt.resourseCode}
+		</if>
+		<if test="comt.userCode != null and comt.userCode != ''">
+			OR user_code = #{comt.userCode}
+		</if>
+		<if test="comt.comment != null and comt.comment != '' ">
+			OR comment like  CONCAT('%',#{comt.comment},'%')
+		</if>
+		ORDER BY creation_date DESC
+		<if test="comt.offset!=null and comt.limit !=null">
+			LIMIT
+			#{comt.offset,jdbcType=INTEGER},#{comt.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="getCommentCount" resultType="int" parameterType="com.huayu.irla.core.comment.vo.CommentVO">
+		SELECT
+		  COUNT(1)
+		FROM irla_comment
+		WHERE 1=1
+		<if test="comt.resourseCode!=null and comt.resourseCode!=''">
+			AND resource_code = #{comt.resourseCode}
+		</if>
+		<if test="comt.userCode != null and comt.userCode != ''">
+			OR user_code = #{comt.userCode}
+		</if>
+		<if test="comt.comment != null and comt.comment != '' ">
+			OR comment like  CONCAT('%',#{comt.comment},'%')
+		</if>
+	</select>
+	
+	<insert id="addComment" parameterType="com.huayu.irla.core.comment.vo.CommentVO">
+		INSERT INTO irla_comment
+		            (`comment`,
+		             resource_code,
+		             user_code,
+		             photo,
+		             creation_date)
+		VALUES (#{comt.comment},
+		        #{comt.resourseCode},
+		        #{comt.userCode},
+		        #{comt.photo},
+		        SYSDATE())
+	</insert>
+	
+	<delete id="deleteComment" parameterType="int">
+		DELETE FROM irla_comment WHERE id=#{id}
+	</delete>
+</mapper>

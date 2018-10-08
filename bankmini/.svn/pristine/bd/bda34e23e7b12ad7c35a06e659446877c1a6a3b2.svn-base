@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.role.IUserManageDao">
+	<select id="findUser" parameterType="com.huayu.irla.core.user.vo.UserInfoVO" resultType="com.huayu.irla.core.user.vo.UserInfoVO">
+		SELECT
+		ut.id as id,
+		ut.user_code   as userCode,
+		ut.user_name as userName,
+		ut.sex as sex,
+		ut.date_of_birth as dateOfBirth,
+		ut.phone as phone,
+		ut.residential_address as
+		residentialAddress,
+		ut.department_Code as departmentCode,
+		ut.is_authentication as
+		isAuthentication,
+		ut.certification_authority as
+		certificationAuthority,
+		ut.plateform_code as
+		plateformCode,
+		ut.integral as
+		integral,
+		ut.level as level,
+		ut.picture_links as pictureLinks,
+		ut.created_by as createdBy,
+		ut.creation_date as creationDate,
+		ut.last_update_date as lastUpdateDate,
+		ut.last_updated_by as lastUpdatedBy,
+		ut.is_valid as   isValid,
+		ut.description as description,
+		ut.province    as province,
+		ut.town        as  town    ,
+		ut.district       as district,
+		ut.email         as email,
+		ut.ID_Card         as idCard
+		FROM
+		sys_userinfo_t ut 
+		
+		WHERE
+		 1=1
+		<if test="userInfoVO.departmentCodes!=null and userInfoVO.departmentCodes.size()!=0">
+		 and  ut.department_Code in 
+         <foreach collection="userInfoVO.departmentCodes" item="departmentCodes"  open="(" separator="," close=")">
+          		#{departmentCodes}
+          </foreach>
+          </if>
+		<if test="userInfoVO.id!=null and userInfoVO.id!=''">
+			and ut.id = #{userInfoVO.id}
+		</if>
+		<if test="userInfoVO.userName!=null and userInfoVO.userName!=''">
+		 	and ut.user_name like  CONCAT('%',#{userInfoVO.userName},'%')
+		</if>
+		<if test="userInfoVO.sex!=null and userInfoVO.sex!=''">
+		 	and ut.sex = #{userInfoVO.sex} 
+		</if>
+		<if test="userInfoVO.userCode!=null and userInfoVO.userCode!=''">
+		 	and ut.user_code like  CONCAT('%',#{userInfoVO.userCode},'%')
+		</if>
+		<if test="userInfoVO.departmentCode!=null and userInfoVO.departmentCode!=''">
+		 	and ut.department_Code = #{userInfoVO.departmentCode}
+		</if>
+		<if test="userInfoVO.plateformCode!=null and userInfoVO.plateformCode!=''">
+		 	and ut.plateform_code = #{userInfoVO.plateformCode}
+		</if>
+		and ut.last_updated_by!='irla-sys'
+		ORDER BY 
+			ut.id DESC
+		<if test="userInfoVO.offset!=null and userInfoVO.limit !=null">
+			LIMIT #{userInfoVO.offset,jdbcType=INTEGER},#{userInfoVO.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="getCount" resultType="int" parameterType="com.huayu.irla.core.user.vo.UserInfoVO">
+		select count(1)
+		from 
+		sys_userinfo_t ut 
+		
+		
+		WHERE
+		1 = 1
+		<if test="userInfoVO.departmentCodes!=null and userInfoVO.departmentCodes.size()!=0">
+		 and  ut.department_Code in 
+         <foreach collection="userInfoVO.departmentCodes" item="departmentCodes"  open="(" separator="," close=")">
+          		#{departmentCodes}
+          </foreach>
+          </if>
+		<if test="userInfoVO.id!=null and userInfoVO.id!=''">
+			and ut.id = #{userInfoVO.id}
+		</if>
+		<if test="userInfoVO.userName!=null and userInfoVO.userName!=''">
+		 	and ut.user_name like  CONCAT('%',#{userInfoVO.userName},'%')
+		</if>
+		<if test="userInfoVO.sex!=null and userInfoVO.sex!=''">
+		 	and ut.sex = #{userInfoVO.sex} 
+		</if>
+		<if test="userInfoVO.userCode!=null and userInfoVO.userCode!=''">
+		 	and ut.user_code like  CONCAT('%',#{userInfoVO.userCode},'%')
+		</if>
+		<if test="userInfoVO.departmentCode!=null and userInfoVO.departmentCode!=''">
+		 	and ut.department_Code = #{userInfoVO.departmentCode}
+		</if>
+		<if test="userInfoVO.plateformCode!=null and userInfoVO.plateformCode!=''">
+		 	and ut.plateform_code = #{userInfoVO.plateformCode}
+		</if>
+		and ut.last_updated_by!='irla-sys'
+	</select>
+	
+
+
+	<insert id="addUser" parameterType="com.huayu.irla.core.user.vo.UserInfoVO">
+		INSERT INTO sys_userinfo_t
+		(
+		user_code ,
+		user_name ,
+		sex ,
+		date_of_birth ,
+		phone ,
+		residential_address,
+		picture_links,
+		is_authentication,
+		certification_authority,
+		integral ,
+		level ,                   
+		created_by ,
+		creation_date ,
+		last_update_date ,                                             
+		last_updated_by ,                                              
+		is_valid ,                                                     
+		description,                                                   
+		province,
+		town,
+		district,
+		email,
+		ID_Card
+		)
+		VALUES
+		(
+		#{userCode}, #{userName},#{sex},#{dateOfBirth}
+		, #{userCode}, #{residentialAddress}, 
+		#{pictureLinks},
+		#{isAuthentication}
+		, #{certificationAuthority},
+		#{integral}
+		, #{level},  #{createdBy},
+		SYSDATE(),SYSDATE()
+		, #{createdBy}, '1', #{description}, #{province}, #{town},
+		 #{district}, #{email},
+		 #{idCard}
+		);
+	</insert>
+	
+	<insert id="addSysUser" parameterType="com.huayu.irla.core.user.vo.UserInfoVO">
+		INSERT INTO sys_users
+		(
+		USER_CODE ,
+		PASSWORD ,
+		DT_CREATE ,
+		LAST_LOGIN ,
+		DEADLINE ,
+		ACCOUNT_NON_EXPIRED,
+		ACCOUNT_NON_LOCKED,
+		CREDENTIALS_NON_EXPIRED,
+		is_valid 
+		)
+		VALUES
+		(
+		#{userCode}, 
+		#{password},
+		SYSDATE(),
+		SYSDATE(),
+		SYSDATE(),
+		'1',
+		'1',
+		'1',
+		'1'
+		);
+	</insert>
+
+	<update id="updateUser" parameterType="com.huayu.irla.core.user.vo.UserInfoVO">
+		UPDATE sys_userinfo_t
+		SET   
+		user_code                 =#{userCode},                         
+		user_name                 =#{userName},           
+		sex                       =#{sex},                
+		date_of_birth             =#{dateOfBirth},        
+		phone                     =#{phone},              
+		residential_address       =#{residentialAddress}, 
+		department_Code                =#{departmentCode},  
+		is_authentication         =#{isAuthentication},
+		certification_authority   =#{certificationAuthority},
+		plateform_code            =#{plateformCode},
+		integral                  =#{integral},           
+		level                     =#{level},                                          
+		picture_links             =#{pictureLinks},                                   
+		last_update_date                 = SYSDATE(),                                 
+		last_updated_by               =#{lastUpdatedBy},                              
+		<if test="isValid !=null">
+	     is_valid                 =#{isValid},
+		</if>          
+		description                    =#{description}  ,
+		province                       =#{province}, 
+		town                           =#{town},
+		district                       =#{district} ,
+		email                           =#{email},
+		ID_Card                           =#{idCard}
+		WHERE 
+		id = #{id}
+	</update>
+	
+	<update id="updateSysUser" parameterType="com.huayu.irla.core.user.vo.UserInfoVO">
+		UPDATE sys_users
+		SET   
+		<if test="isValid !=null">
+	     is_valid                 =#{isValid},
+		</if>  
+		USER_CODE               = #{userCode}
+		WHERE 
+		USER_CODE               = #{interimCode}
+	</update>
+	
+
+	<delete id="deleteUser" parameterType="int"> 
+		DELETE FROM 
+		sys_userinfo_t 
+		WHERE 
+		id = #{id jdbcType=INTEGER}
+	</delete>
+	
+	
+	<delete id="deleteUserIdCard" parameterType="string"> 
+		DELETE FROM 
+		sys_userinfo_t 
+		WHERE 
+		USER_CODE = #{IdCard jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="deleteSysUser" parameterType="string"> 
+		DELETE FROM 
+		sys_users 
+		WHERE 
+		USER_CODE = #{userCode jdbcType=VARCHAR}
+	</delete>
+
+
+	<select id="getImportCodeSeq" resultType="java.lang.Long">
+	     SELECT nextval('import_code') from dual
+	</select>
+
+</mapper>  

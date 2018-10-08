@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.huayu.irla.privilege.manage.dao.ISysUsersRepositoryDao">  
+    <resultMap id="sysUsers" type="com.huayu.irla.core.user.vo.MobSysUsersVO"/>
+   
+		
+	<select id="getByUserCode" parameterType="java.lang.String" resultMap="sysUsers">  
+	      SELECT 
+		      uft.user_code userCode,
+		      uft.session_key sessionKey,
+		      uft.unionid,
+			uft.sex sex,
+			uft.province as province,
+			uft.town as town,
+			uft.phone phone
+		FROM 
+			 sys_userinfo_t uft
+    		
+		WHERE 
+			uft.USER_CODE = #{userCode}
+	</select>  
+</mapper>  

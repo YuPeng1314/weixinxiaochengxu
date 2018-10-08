@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.manage.dao.categoryManage.ICategoryManageDao">
+	<select id="findCategory" parameterType="categoryVO" resultType="categoryVO">
+		SELECT
+		  ca.id,
+		  ca.category_code,
+		  ca.category_name,
+		  ca.parent_category_code,
+		  ca.category_level,
+		  ca.category_img,
+		  ca.is_valid             AS isValid,
+		  ca.created_by           AS createdBy,
+		  ca.creation_date        AS creationDate,
+		  ca.last_updated_by      AS lastUpdatedBy,
+		  ca.last_update_date     AS lastUpdateDate,
+		  ca.description          AS description,
+		  ca.sequence_number
+		FROM irla_category_t ca
+		WHERE 1=1
+		<if test="category.id !=null">
+			AND ca.id = #{category.id}
+		</if>
+		<if test="category.category_name != null and category.category_name != ''">
+			AND ca.category_name like CONCAT('%', #{category.category_name},'%')
+		</if>
+		<if test="category.category_code != null and category.category_code != ''">
+			AND ca.category_code = #{category.category_code}
+		</if>
+		<if test="category.parent_category_code != null and category.parent_category_code != ''">
+			AND ca.parent_category_code = #{category.parent_category_code}
+		</if>
+		<if test="category.category_level != null">
+			AND ca.category_level = #{category.category_level}
+		</if>
+		<if test="category.isValid != null and category.isValid != ''">
+			AND ca.is_valid = #{category.isValid,jdbcType=INTEGER}
+		</if>
+		ORDER BY
+			category_code ASC
+		<if test="category.offset != null and category.limit != null">
+			LIMIT #{category.offset,jdbcType=INTEGER},#{category.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="getCategoryCount" resultType="int" parameterType="categoryVO">
+		SELECT
+		  COUNT(1)
+		FROM irla_category_t
+		<where>
+			1=1
+			<if test="category.id != null">
+				AND id = #{category.id}
+			</if>
+			<if test="category.parent_category_code != null and category.parent_category_code != ''">
+				AND parent_category_code = #{category.parent_category_code}
+			</if>
+			<if test="category.category_level != null and category.category_level != ''">
+				AND category_level = #{category.category_level}
+			</if>
+			<if test="category.category_name != null and category.category_name != ''">
+				AND category_name like CONCAT('%', #{category.category_name},'%')
+			</if>
+		</where>
+	</select>
+	<insert id="addCategory" parameterType="categoryVO">
+		INSERT INTO irla_category_t
+            (category_code,
+             category_name,
+             parent_category_code,
+             category_level,
+             category_img,
+             is_valid,
+             created_by,
+             creation_date,
+             last_updated_by,
+             last_update_date,
+             description,
+             sequence_number)
+		VALUES (
+		    (concat('G', cast(nextval('category_code') as char))),
+			#{category.category_name},
+			#{category.parent_category_code},
+			#{category.category_level},
+			#{category.category_img},
+			'0',
+			#{category.createdBy},
+			SYSDATE(),
+			#{category.lastUpdatedBy},
+			SYSDATE(),
+			#{category.description},
+			#{category.sequence_number}
+		)
+	</insert>
+	<update id="updateCategory" parameterType="categoryVO">
+		UPDATE irla_category_t
+		SET
+		  <if test="category.category_name != null and category.category_name != ''">
+		  	category_name = #{category.category_name},
+		  </if>
+		  <if test="category.category_img != null and category.category_img != ''">
+		  	category_img = #{category.category_img},
+		  </if>
+		  <if test="category.parent_category_code != null and category.parent_category_code != ''">
+		  	parent_category_code = #{category.parent_category_code},
+		  </if>
+		  <if test="category.category_level != null and category.category_level != ''">
+		  	category_level = #{category.category_level},
+		  </if>
+		  <if test="category.isValid != null and category.isValid != ''">
+		  	is_valid = #{category.isValid},
+		  </if>
+		  <if test="category.lastUpdatedBy != null and category.lastUpdatedBy != ''">
+		  	last_updated_by = #{category.lastUpdatedBy},
+		  </if>
+		  <if test="category.description != null and category.description != ''">
+		  	description = #{category.description},
+		  </if>
+		  <if test="category.sequence_number != null and category.sequence_number != ''">
+		  	sequence_number = #{category.sequence_number},
+		  </if>
+		  	last_update_date = SYSDATE()
+		 WHERE 1=2
+	 	<if test="category.id != null and category.id != ''">
+	 		OR id = #{category.id}
+	 	</if>
+	 	<if test="category.category_code!= null and category.category_code != ''">
+	 		OR category_code = #{category.category_code}
+	 	</if>
+	</update>
+	<delete id="deleteCategory" parameterType="Integer">
+		DELETE
+		FROM irla_category_t
+		WHERE id = #{id}
+	</delete>
+
+</mapper>

@@ -1,0 +1,124 @@
+<script src="/ietlAdmin/js/operationlog/operationlog.js"></script>  
+<script type="text/javascript">
+	$(function() {
+		log.initTable();
+	});
+</script>
+
+
+<form id="operaLogFrom"  class="form-horizontal" role="form"	>
+<input type="hidden"  name="operaStatus" id="opera_status" >
+<div class="record_div">
+						<ul class="nav nav-tabs" style="width: 60%;">
+							<li class="active" style="width: 15%;"><a href="#tab1" data-toggle="tab" onclick="log.operaStatus(1)">操作日志</a></li>
+							<li style="width: 15%;"><a href="#tab2" data-toggle="tab" onclick="log.operaStatus(2)">登录日志</a></li>
+							
+						</ul>
+				</div>
+				</form>
+				</br>
+
+<form id="searchFrom" class="form-horizontal" role="form">
+	<div class="form-group container">
+		<div class="row">
+			<div class="col-md-1">
+				<label  style="width: auto; margin-top: 5px" for="date_action">开始时间</label>
+				</div>
+					<div class="col-md-3" style="margin-left: 0px">
+				<div class="input-group date form_date" data-date=""
+					data-date-format="yyyy-mm-dd" data-link-field="date_action"
+					data-link-format="yyyy-mm-dd">
+					<input size="16" type="text" class="form-control"
+						id="opeartion_time" name="opeartion_time" value="" readonly>
+					<span class="input-group-addon"><span
+						class="glyphicon glyphicon-calendar"></span></span> <input type="hidden"
+						id="date_action" value="" />
+				</div>
+			</div>
+			<div class="col-md-1">
+				<label style="width: auto; margin-top: 5px" for="date_end">结束时间</label>
+				</div>
+				<div class="col-md-3" style="margin-left: 0px">
+				<div class="input-group date form_date" data-date=""
+					data-date-format="yyyy-mm-dd" data-link-field="date_end"
+					data-link-format="yyyy-mm-dd">
+					<input size="16" type="text" class="form-control"
+						id="opeartion_etime" name="opeartion_etime" value="" readonly>
+					<span class="input-group-addon"><span
+						class="glyphicon glyphicon-calendar"></span></span> <input type="hidden"
+						id="date_end" value="" />
+				</div>
+			</div>
+			</div>
+			<div class="row" style="margin-top: 5px">
+			<div class="col-md-1">
+			<label  style="width: auto; margin-top: 5px">操作结果</label>
+			</div>
+			<div class="col-md-3">
+			<select type="select" class="form-control" id="operation_flag" name="operation_flag">
+				 <option value ="">--请选择--</option>
+				  <option value ="1">正常</option>
+				  <option value ="0">异常</option>
+				</select>
+			</div>
+			<div class="col-md-4">
+				 <input type="button"
+					class="btn btn-primary " id="search" onclick="log.searchBtn()"
+					value="查询" /> <input type="button" class="btn btn-primary "
+					id="rest" onclick="log.restBtn()" value="清空" />
+			</div>
+		</div>
+		</div>
+</form>
+
+<!-- 操作日志的表格 -->
+<table id="log_table"></table>
+
+
+<form id="searchLoginFrom"  class="form-horizontal" role="form"	>
+		<div class="form-group">
+			<label class="col-sm-1" style="width: auto; margin-top: 6px" for="userCode">用户账号</label>
+			<div class="col-sm-2">
+			<input type="text" class="form-control" name="userCode" id="user_code" placeholder="请输入....">
+						 </select>
+			</div>
+			<label class="col-sm-1" style="width: auto; margin-top: 6px" for="userIP">用户IP</label>
+			<div class="col-sm-2">
+			<input type="text" class="form-control" name="userIP" id="user_ip" placeholder="请输入....">
+			</div>
+			<label class="col-sm-1" style="width: auto; margin-top: 6px" for="type">操作类型</label>
+			<div class="col-sm-2">
+			<select type="select" class="form-control" id="type" name="type">
+				 <option value ="">--请选择--</option>
+				  <option value ="1">登录</option>
+				  <option value ="2">登出</option>
+				</select>
+			</div>
+			 <div class="col-sm-2"> 
+			<input type="button" class="btn btn-primary " id = "login_search" onclick="log.loginSearch()" value = "查询"/>
+			<input type="button" class="btn btn-primary " id = "login_refresh" onclick="log.loginRefresh()" value = "清空"/>
+				</div>
+	</div>
+	</form>
+
+<!-- 登录日志的表格 -->
+<table id="login_table">
+</table>
+
+<div style="height:25px;"/>
+
+<script type="text/javascript">
+	$('.form_date').datetimepicker({
+		language : 'zh-CN',
+		weekStart : 1,
+		todayBtn : 1,
+		autoclose : 1,
+		todayHighlight : 1,
+		startView : 2,
+		minView : 2,
+		pickerPosition: "bottom-left",
+		forceParse : 0
+	});
+</script>
+</body>
+</html>

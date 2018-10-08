@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.share.IShareDao">
+	<select id="getShareCount" parameterType="com.huayu.irla.core.share.vo.ShareVO" resultType="int">
+		SELECT
+  			COUNT(1)
+		FROM irla_resource_share_t
+		WHERE resource_code = #{share.resourceCode}	
+	</select>
+	<insert id="addShare" parameterType="com.huayu.irla.core.share.vo.ShareVO">
+		INSERT INTO irla_resource_share_t
+		            (resource_code,
+		             course_code,
+		             share_num,
+		             last_updated_by,
+		             last_update_date)
+		VALUES (#{share.resourceCode},
+		        #{share.courseCode},
+		        1,
+		        #{share.lastUpdatedBy},
+		        SYSDATE())
+	</insert>
+	<update id="updateShare" parameterType="com.huayu.irla.core.share.vo.ShareVO">
+		UPDATE irla_resource_share_t
+		SET share_num = share_num+1
+		WHERE resource_code = #{share.resourceCode}
+	</update>
+</mapper>

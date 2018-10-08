@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="shortcut icon" href="/ietlAdmin/img/fu.ico" type="image/x-icon" />
+		<title>雨露计划管理系统</title>
+	</head>
+	<body>
+		<div class="404html" style="width:500px; margin-left: auto; margin-right: auto; margin-top: 100px; text-align: center;">
+			<img src="/ietlAdmin/img/403.png">
+			<h4>抱歉...您当前没有访问权限 请联系管理员</h4>
+			<div>
+				<a href="/ietlAdmin/logout"><img src="/ietlAdmin/img/enter_index.png"></a>
+			</div>
+		</div>
+	</body>
+</html>

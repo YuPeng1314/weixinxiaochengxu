@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huayu.irla.privilege.manage.dao.ISysMetaDataDao">  
+    <resultMap id="sysUrlPerVO" type="com.huayu.irla.privilege.manage.vo.SysUrlPersistentVO"/>
+    <parameterMap id="sysUrlPerVO" type="com.huayu.irla.privilege.manage.vo.SysUrlPersistentVO"/>
+    
+	<select id="getURLResourceMapping"  resultType="java.util.Map" parameterType="java.util.List">  
+		SELECT S3.RESOURCE_PATH resourcePath, concat(S2.AUTHORITY_MARK,'+',S2.AUTHORITY_NAME) authorityMark FROM 
+			SYS_AUTHORITIES_RESOURCES S1 JOIN SYS_AUTHORITIES S2 
+			ON S1.AUTHORITY_ID = S2.AUTHORITY_ID   
+            JOIN SYS_RESOURCES S3 ON S1.RESOURCE_ID = S3.RESOURCE_ID where S3.RESOURCE_TYPE='URL' 
+            
+            <if test="types!=null and types.size()!=0">
+                AND s2.type in
+                <foreach collection="types" item="type"
+                    index="index" open="(" close=")" separator=",">
+                    #{type}
+                </foreach>
+                AND S3.type in 
+                <foreach collection="types" item="type"
+                    index="index" open="(" close=")" separator=",">
+                    #{type}
+                </foreach>
+            </if>
+            ORDER BY S3.PRIORITY DESC
+	</select>  
+	
+	<delete id="deleteAuthorities">
+	  delete from sys_authorities
+	</delete>
+
+	<delete id="deleteResources">
+	  delete from sys_resources
+	</delete>
+
+	<delete id="deleteAuthResRel">
+	  delete from sys_authorities_resources
+	</delete>
+	
+	<select id="getAuthoritiySeq" resultType="java.lang.Long">
+	   select nextval('sys_authoritiy_seq') from dual
+	</select>
+	
+	<select id="getResSeq" resultType="java.lang.Long">
+	  select nextval('sys_resources_seq') from dual
+	</select>
+	
+	<select id="getPriSeq" resultType="java.lang.Long">
+	  select nextval('sys_privilege_seq') from dual
+	</select>
+	
+	<insert id="addAuthorities" parameterMap="sysUrlPerVO">
+	  insert into sys_authorities(AUTHORITY_ID,AUTHORITY_MARK,AUTHORITY_NAME,ENABLE,ISSYS,TYPE) values
+        (#{authorityID,jdbcType=BIGINT},if(#{privilegeMode,jdbcType=INTEGER}=1,'ROLE_READ',if(#{privilegeMode,jdbcType=INTEGER}=2,'ROLD_ADD',if(#{privilegeMode,jdbcType=INTEGER}=3,'ROLE_UPDATE',if(#{privilegeMode,jdbcType=INTEGER}=4,'ROLE_DELETE','ROLE_READ')))),#{privilegeName,jdbcType=VARCHAR},true,true,'ietl')
+	</insert>
+	
+	<insert id="addResources" parameterMap="sysUrlPerVO">
+	 insert into sys_resources(RESOURCE_ID, RESOURCE_TYPE,RESOURCE_NAME,RESOURCE_DESC,RESOURCE_PATH,PRIORITY,ENABLE,ISSYS,TYPE)
+     values(#{resourceID,jdbcType=BIGINT},'URL',#{resourceName,jdbcType=VARCHAR},'system inital',#{url,jdbcType=VARCHAR},#{privilegeMode,jdbcType=INTEGER},true,true,'ietl');
+	</insert>
+	
+	<insert id="addAuthResRel" parameterMap="sysUrlPerVO">
+	  insert into sys_authorities_resources(RESOURCE_ID,AUTHORITY_ID) values(#{resourceID,jdbcType=BIGINT},#{authorityID,jdbcType=BIGINT})
+	</insert>
+	
+	 <insert id="addPrivilegeTmp" parameterMap="sysUrlPerVO">
+	   insert into sys_url_persistent_temp(authority_id,resource_id,privilege_name,privilege_mode,url,resource_name,batch_id) values(#{authorityID,jdbcType=BIGINT},#{resourceID,jdbcType=BIGINT},#{privilegeName,jdbcType=VARCHAR},#{privilegeMode,jdbcType=INTEGER},#{url,jdbcType=VARCHAR},#{resourceName,jdbcType=VARCHAR},#{batchID,jdbcType=BIGINT})
+	</insert>
+	
+    <!--事务过程保存投标，防止冒投-->
+    <select id="initalPrivilege" parameterType="java.util.Map" statementType="CALLABLE">  
+      {call initalPrivilege(#{batchNum,jdbcType=BIGINT,mode=IN},#{dataType,jdbcType=VARCHAR,mode=IN})}
+    </select> 
+</mapper>  

@@ -1,0 +1,203 @@
+<script src="/ietlAdmin/js/roleManage/roleManage.js"></script>
+<script type="text/javascript">
+	$(function() {
+		part.initTable();
+	});
+</script>
+
+
+<!-- 显示角色界面的搜索表单 -->
+<form id="searchFrom"  class="form-horizontal" role="form"	>
+		<div class="form-group">
+		<label class="col-sm-4" style="width: auto; margin-top: 6px" >用户名称&nbsp;&nbsp;<a title="模糊输入用户名，查询用户所代表的角色" class ="ico_a glyphicon glyphicon-question-sign" style="color:#FF8000;"></a></label>
+			<div class="col-sm-3">
+			<input type="text" class="form-control" name="userName" id="user_name" placeholder="请输入....">
+			</div>
+			 <div class="col-sm-4"> 
+			<input type="button" class="btn btn-primary " id = "search" onclick="part.userTable()" value = "查询"/>
+			<input class="btn btn-primary" type="button"  id = "empty" onclick="part.fromEmpty()" value="清空" />
+			<input class="btn btn-primary privilege-hints" type="button" pri_url="/ws/addRole"  onclick="part.showModel()" value="添加" />
+			 </div>
+			  </div>
+			<input type="text" value="解决bootstrap与AJAX异步提交表单的冲突" hidden />
+	</form>
+     <!-- 展示角色的表格 -->
+	<table id="part_table">
+	
+	</table>
+	
+	
+    <!-- 增加和编辑角色的模态框 -->
+	<div id="addRoleModal" class="modal fade" data-backdrop="static" role="dialog">
+		<div class="modal-dialog" style="width: 800px;height: 800px">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">角色维护</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form" id="addRoleForm">
+					<input id= "ROLE_ID" name="roleId"  type="text" style="display: none">
+					<div class="form-group">		
+							<label class="col-sm-2 control-label" for="name">角色名称<font color="red">&ensp;*</font></label> 
+							<div class="col-sm-6">
+							<input type="text" class="form-control" id="ROLE_NAME" name="roleName" placeholder="请输入角色名称">
+					</div>
+					</div>
+					
+					<div class="form-group">
+							<label class="col-sm-2 control-label" for="name">角色类型<font
+								color="red">&ensp;*</font></label>
+							<div class="col-sm-6">
+								<select type="select" id="type"
+									name="type" class=" selectpicker form-control"
+									data-live-search="true" title="---请选择角色类型--- ">
+								</select>
+							</div>
+						</div>
+						
+					
+					<div class="form-group">
+							<label class="col-sm-2 control-label" for="name">角色描述<font color="red">&ensp;*</font></label> 
+							<div class="col-sm-6">
+							<textarea type="textarea" class="form-control" style = "resize:none;" id="ROLE_DESC" name="roleDesc" placeholder="请输入角色描述"
+							></textarea>
+							</div>
+					</div>
+
+						</table>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" onclick="part.addRole()">确定</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	
+	
+	<!-- 显示用户下的角色的模态框 -->
+	<div id="searchUserModal" class="modal fade" data-backdrop="static" role="dialog">
+		<div class="modal-dialog" style="width: 800px;height: 800px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">用户角色</h4>
+					<!-- 显示用户下的角色的表格 -->
+					<table id="RoleUser_table"></table>
+				</div>
+				<div class="modal-body">
+					</div>
+			</div>
+		</div>
+	</div>
+
+<!-- 显示角色下的用户的模态框 -->
+<div id="RoleUserModal" class="modal fade" data-backdrop="static" role="dialog" style="overflow-y: auto;">
+		<div class="modal-dialog" style="width: 900px;height: 900px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title" >角色用户维护</h4> 
+					<input id= "ROLE_ID_search" name="roleId"  type="hidden">
+				</div>
+				<div class="modal-body">
+<!-- 显示角色下的用户的模态框中的搜索表单 -->
+ <form id="searchRoleUserFrom"  class="form-horizontal" role="form"	> 
+		<div class="form-group">
+		<h5 style= "margin-left:15px; color:#FF8000" class="modal-title" id = 'roleName_search'></h5></br>
+			 <label class="col-sm-2" style="width: auto; margin-top: 6px"  for="userCode">用户账号</label>
+			<div class="col-sm-2">
+			<input type="text" class="form-control" name="userCode" id="user_code_user" placeholder="请输入....">
+			</div> 
+			 <label class="col-sm-2" style="width: auto; margin-top: 6px"  for="userName">用户名称</label>
+			<div class="col-sm-2">
+			<input type="text" class="form-control" name="userName" id="user_name_user" placeholder="请输入....">
+			</div> 
+			 <div class="col-sm-4"> 
+			<input type="button" class="btn btn-primary "  onclick="part.searchBtn()" value = "查询"/>
+			<input type="button" class="btn btn-primary " id = "refresh" onclick="part.rotaEmpty()" value = "清空"/>
+			<input class="btn btn-primary privilege-hints" pri_url="/ws/filterUser" type="button"  id="sumbit"  onclick="part.addUserModel()" value="添加" />
+				</div>
+	</div>
+	<input type="text" value="解决bootstrap与AJAX异步提交表单的冲突" hidden />
+</form>
+<!-- 展示角色下的用户的表格 -->
+<table id="PartUser_table"></table>
+
+		</div>
+			</div>
+
+		</div>
+	</div>
+	
+<!-- 角色下增加用户的模态框 -->
+<div id="addRoleUserModal" class="modal fade" data-backdrop="static" role="dialog">
+		<div class="modal-dialog" style="width: 1000px;height: 1000px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title" >增加角色用户</h4>
+					<!-- <input id= "ROLE_ID_add" name="roleId"  type="hidden"> -->
+				</div>
+				<div class="modal-body">
+<!-- 角色下增加用户的模态框中的搜索框 -->
+<form id="searchUserFrom"  class="form-horizontal" role="form"	>
+		<div class="form-group">
+			<label class="col-sm-2" style="width: auto; margin-top: 6px" for="userCode">用户账号</label>
+			<div class="col-sm-2">
+			<input type="text" class="form-control" name="userCode" id="userCode_user" placeholder="请输入....">
+			</div>
+			<label class="col-sm-2" style="width: auto; margin-top: 6px" for="userName">用户名称</label>
+			<div class="col-sm-2">
+			<input type="text" class="form-control" name="userName" id="userName_user" placeholder="请输入....">
+			</div>
+			 <div class="col-sm-4"> 
+			<input type="button" class="btn btn-primary " onclick="part.searchUser()" value = "查询"/>
+			<input type="button" class="btn btn-primary " id = "resetting" onclick="part.cleanUser()" value = "清空"/>
+				</div>
+	</div>
+	<input type="text" value="解决bootstrap与AJAX异步提交表单的冲突" hidden />
+	</form>
+	<!-- 展示未在角色下的用户表格 -->
+	<table id="user_table"></table>
+	
+	</div>
+	<div class="modal-footer">
+					<button type="button" class="btn btn-primary"  id = "sumbit" onclick="part.sumbit()">提交</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	
+	<!-- 显示角色下的权限配置的模态框 -->
+	<div id="RolePowerModal" class="modal fade" data-backdrop="static" role="dialog">
+		<div class="modal-dialog" style="width: 800px;height: 800px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title" id = 'roleName_power'></h4>
+					<input id= "ROLE_ID_power" name="roleId"  type="hidden">
+				</div>
+				<div class="modal-body">
+				
+		   <!-- 显示角色下的权限配置的表格 -->
+           <div id="poewrShow" class="ico_a " style="height: 400px;overflow:auto;">
+          	 
+           </div> 
+           <input id= "Node_ID_power" name="nodeId"  type="hidden">
+		</div>
+		<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" onclick="part.saveNodeId()" disabled="disabled" id="saveBtn">保存</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	

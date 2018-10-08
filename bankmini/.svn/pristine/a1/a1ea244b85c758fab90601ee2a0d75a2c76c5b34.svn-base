@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+	  <context:component-scan base-package="com.huayu.irla.mobile.**">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/> 
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/> 
+		<!-- 不扫描配置文件类，避免重复初始化 --> 
+		<context:exclude-filter type="annotation" expression="org.springframework.context.annotation.Configuration"/>
+	</context:component-scan>
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+	<aop:aspectj-autoproxy expose-proxy="true"/>
+	
+	<bean id="customerValidatorConfig" class="com.huayu.irla.mobile.loginout.CustomePrivilegeConfig" />
+	
+</beans>

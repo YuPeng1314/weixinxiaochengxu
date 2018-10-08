@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.roleManage.IRoleManageDao">
+	<select id="getRole" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO" resultType="com.huayu.irla.core.user.vo.RoleInfoVO">
+		 SELECT
+		ut.ROLE_ID                             as roleId,   
+		ut.ROLE_NAME                           as roleName,       
+		ut.ROLE_DESC                           as roleDesc,       
+		ut.is_valid                            as isValid,        
+		ut.ISSYS                               as issys,   
+		ut.TYPE                                as type,             
+		ut.created_by                          as createdBy,       
+		ut.creation_date                       as creationDate,    
+		ut.last_updated_by                     as lastUpdatedBy,      
+		ut.last_update_date                    as lastUpdateDate,    
+		ut.MODULE_ID                           as moduleId   
+		FROM                                                
+		sys_roles ut
+		WHERE
+		1 = 1
+		<if test="role.roleId!=null and role.roleId!=''">
+			and ut.ROLE_ID = #{role.roleId}
+		</if>
+		
+		<if test="role.type!=1">
+		    and ut.type!=1
+		</if>
+		ORDER BY 
+			ut.ROLE_ID DESC
+		<if test="role.offset!=null and role.limit !=null">
+			LIMIT #{role.offset,jdbcType=INTEGER},#{role.limit,jdbcType=INTEGER}
+		</if>
+		
+		
+	</select>
+	
+	<select id="getCount" resultType="int" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO">
+		select count(1) from sys_roles ut
+		WHERE
+		1 = 1
+		<if test="role.roleId!=null and role.roleId!=''">
+			and ut.ROLE_ID = #{role.roleId}
+		</if>
+		<if test="role.type!=1">
+		    and ut.type!=1
+		</if>
+	</select>
+	
+	<select id="getRoleUser" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO" resultType="com.huayu.irla.core.user.vo.RoleInfoVO">
+	    SELECT
+        	b.user_name                            as userName, 
+        	b.USER_CODE                            as userCode,
+        	c.USER_ID                              as userId,
+        	c.UR_ID                                as urId,
+        	c.is_valid                             as isValid,
+        	c.last_updated_by                      as lastUpdatedBy,
+        	c.last_update_date                     as lastUpdateDate,
+        	ut.ROLE_NAME                           as roleName,
+        	ut.ROLE_DESC                           as roleDesc,
+        	ut.ROLE_ID                             as roleId
+        FROM
+        	(
+        		(
+        			sys_users a
+        			JOIN sys_userinfo_t b ON a.USER_CODE = b.user_code
+        		)
+        		JOIN sys_users_roles c ON a.USER_ID = c.USER_ID
+        	)
+            JOIN sys_roles ut ON ut.ROLE_ID = c.ROLE_ID
+		WHERE
+		1 = 1
+		<if test="role.roleId!=null and role.roleId!=''">
+			and ut.ROLE_ID = #{role.roleId}
+		</if>
+		<if test="role.urId!=null and role.urId!=''">
+			and c.UR_ID = #{role.urId}
+		</if>
+		<if test="role.type!=1">
+		    and ut.type!=1
+		</if>
+		<if test="role.userName!=null and role.userName!=''">
+		 	and (b.user_name like  CONCAT('%',#{role.userName},'%') or b.user_code like CONCAT('%', #{role.userName}, '%'))
+		</if>
+		<if test="role.userCode!=null and role.userCode!=''">
+		 	and b.USER_CODE like  CONCAT('%',#{role.userCode},'%')
+		</if>
+		ORDER BY 
+			c.UR_ID DESC
+		<if test="role.offset!=null and role.limit !=null">
+			LIMIT #{role.offset,jdbcType=INTEGER},#{role.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="getRoleUserCount" resultType="int" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO">
+		select count(1) from ( SELECT
+        	b.user_name                            as userName, 
+        	b.USER_CODE                            as userCode,
+        	c.USER_ID                              as userId,
+        	c.UR_ID                                as urId,
+        	c.is_valid                             as isValid,
+        	c.last_updated_by                      as lastUpdatedBy,
+        	c.last_update_date                     as lastUpdateDate,
+        	ut.ROLE_NAME                           as roleName,
+        	ut.ROLE_DESC                           as roleDesc,
+        	ut.ROLE_ID                             as roleId
+        FROM
+        	(
+        		(
+        			sys_users a
+        			JOIN sys_userinfo_t b ON a.USER_CODE = b.user_code
+        		)
+        		JOIN sys_users_roles c ON a.USER_ID = c.USER_ID
+        	)
+            JOIN sys_roles ut ON ut.ROLE_ID = c.ROLE_ID
+            where (1=1)
+            <if test="role.type!=1">
+			    and ut.type!=1
+			</if>
+            ) m
+		WHERE
+		1 = 1
+		<if test="role.roleId!=null and role.roleId!=''">
+			and m.roleId = #{role.roleId}
+		</if>
+		
+		<if test="role.userName!=null and role.userName!=''">
+		 	and (m.userName like  CONCAT('%',#{role.userName},'%') or m.userCode like CONCAT('%', #{role.userName}, '%'))
+		</if>
+		<if test="role.userCode!=null and role.userCode!=''">
+		 	and m.userCode like  CONCAT('%',#{role.userCode},'%')
+		</if>
+	</select>
+	
+	
+	<select id="filterUser" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO" resultType="com.huayu.irla.core.user.vo.RoleInfoVO">
+		SELECT y.* FROM
+        (SELECT
+		r.id as id,
+		r.user_code   as userCode,
+		r.user_name as userName,
+		r.sex as sex,
+		r.date_of_birth as dateOfBirth,
+		r.registered_name as
+		registeredName,
+		r.phone as phone,
+		r.residential_address as
+		residentialAddress,
+		r.department_Code as departmentCode,
+		r.integral as
+		integral,
+		r.level as level,
+		r.picture_links as pictureLinks,
+		r.created_by as createdBy,
+		r.creation_date as creationDate,
+		r.last_update_date as lastUpdateDate,
+		r.last_updated_by as lastUpdatedBy,
+		r.is_valid as isValid,
+		r.description as description
+		FROM
+		sys_userinfo_t r 
+		WHERE
+		r.is_valid = 1
+		) y
+		WHERE
+	NOT EXISTS (
+		SELECT
+			t.*
+		FROM
+         (SELECT
+        	b.user_name                            as userName,                  
+        	c.is_valid                             as isValid,
+        	c.last_updated_by                      as lastUpdatedBy,
+        	c.last_update_date                     as lastUpdateDate,
+        	ut.ROLE_NAME                           as roleName,
+        	ut.ROLE_DESC                           as roleDesc,
+        	ut.ROLE_ID                             as roleId
+        FROM
+        	(
+        		(
+        			sys_users a
+        			JOIN sys_userinfo_t b ON a.USER_CODE = b.user_code
+        		)
+        		JOIN sys_users_roles c ON a.USER_ID = c.USER_ID
+        	)
+            JOIN sys_roles ut ON ut.ROLE_ID = c.ROLE_ID ) t 
+            WHERE
+			t.userName = y.userName
+			AND
+			<if test="role.roleId!=null and role.roleId!=''">
+			 t.roleId = #{role.roleId}
+		</if>
+			)
+		<if test="role.userName!=null and role.userName!=''">
+		 	and y.userName like  CONCAT('%',#{role.userName},'%')
+		</if>
+		<if test="role.userCode!=null and role.userCode!=''">
+		 	and y.userCode like  CONCAT('%',#{role.userCode},'%')
+		</if>
+		ORDER BY 
+			y.id DESC
+		<if test="role.offset!=null and role.limit !=null">
+			LIMIT #{role.offset,jdbcType=INTEGER},#{role.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="getUserCount" resultType="int" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO">
+		select count(1) from (SELECT 
+		y.* 
+		FROM
+       (SELECT
+		r.*
+		FROM
+		sys_userinfo_t r 
+		WHERE
+		r.is_valid = 1	
+		) y
+		WHERE
+	NOT EXISTS (
+		SELECT
+			t.*
+		FROM
+         (SELECT
+        	b.user_name                            as userName,                  
+        	c.is_valid                             as isValid,
+        	c.last_updated_by                      as lastUpdatedBy,
+        	c.last_update_date                     as lastUpdateDate,
+        	ut.ROLE_NAME                           as roleName,
+        	ut.ROLE_DESC                           as roleDesc,
+        	ut.ROLE_ID                             as roleId
+        FROM
+        	(
+        		(
+        			sys_users a
+        			JOIN sys_userinfo_t b ON a.USER_CODE = b.user_code
+        		)
+        		JOIN sys_users_roles c ON a.USER_ID = c.USER_ID
+        	)
+            JOIN sys_roles ut ON ut.ROLE_ID = c.ROLE_ID) t 
+            WHERE
+			t.userName = y.user_name
+			AND
+			<if test="role.roleId!=null and role.roleId!=''">
+			 t.roleId = #{role.roleId}
+		</if>
+			)) n
+		WHERE
+		1 = 1
+		<if test="role.id!=null and role.id!=''">
+			and n.id = #{role.id}
+		</if>
+		<if test="role.userName!=null and role.userName!=''">
+		 	and n.user_name like  CONCAT('%',#{role.userName},'%')
+		</if>
+		<if test="role.userCode!=null and role.userCode!=''">
+		 	and n.user_code like  CONCAT('%',#{role.userCode},'%')
+		</if>
+	</select>
+	
+	
+	<select id="findMessageUserInfoList" parameterType="com.huayu.irla.core.user.vo.UserInfoVO" resultType="com.huayu.irla.core.user.vo.UserInfoVO">
+		SELECT t.id ,t.user_code as userCode,t.user_name as userName,t.phone as phone FROM sys_userinfo_t t where 1=1
+		
+		<if test="userInfoVO.userName!=null and userInfoVO.userName!=''">
+		 	and t.user_name like  CONCAT('%',#{userInfoVO.userName},'%')
+		</if>
+		
+		<if test="userInfoVO.userCode!=null and userInfoVO.userCode!=''">
+		 	and t.user_code like  CONCAT('%',#{userInfoVO.userCode},'%')
+		</if>
+		ORDER BY 
+			t.id DESC
+		<if test="userInfoVO.offset!=null and userInfoVO.limit !=null">
+			LIMIT #{userInfoVO.offset,jdbcType=INTEGER},#{userInfoVO.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	
+	<select id="getMessageUserInfoCount" resultType="int" parameterType="com.huayu.irla.core.user.vo.UserInfoVO">
+       SELECT count(1) FROM sys_userinfo_t  where 1=1
+		<if test="userInfoVO.userName!=null and userInfoVO.userName!=''">
+		 	and user_name like  CONCAT('%',#{userInfoVO.userName},'%')
+		</if>
+		<if test="userInfoVO.userCode!=null and userInfoVO.userCode!=''">
+		 	and user_code like  CONCAT('%',#{userInfoVO.userCode},'%')
+		</if>
+	</select>
+	
+	<select id="findUserID" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO" resultType="com.huayu.irla.core.user.vo.RoleInfoVO">
+		SELECT
+		ut.USER_ID                             as userId  
+		FROM                                                
+		sys_users ut 
+		WHERE
+		1=1
+		 <if test="role.userCode!=null and role.userCode!=''">
+			and ut.USER_CODE = #{role.userCode}
+		</if> 
+		
+	</select>
+	
+		<select id="getAuthority" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO" resultType="com.huayu.irla.core.user.vo.RoleInfoVO">
+		SELECT
+		          a.AUTHORITY_ID                      as authorityId, 
+                  a.AUTHORITY_MARK                    as authorityMark ,
+                  a.AUTHORITY_NAME                    as authorityName ,
+            	  b.RESOURCE_ID                        as resourceId ,
+            	  b.RESOURCE_NAME                     as resourceName,
+            	  ${role.type}
+                 FROM
+                (sys_authorities a LEFT JOIN
+                    sys_authorities_resources c ON
+                    a.AUTHORITY_ID = c.AUTHORITY_ID)
+                LEFT JOIN
+                    sys_resources b ON
+                    b.RESOURCE_ID = c.RESOURCE_ID
+                WHERE
+		1=1
+		 <if test="role.authorityId!=null and role.authorityId!=''">
+			and a.AUTHORITY_ID = #{role.authorityId}
+		</if>
+		<if test="role.authorityName!=null and role.authorityName!=''">
+			and a.AUTHORITY_NAME = #{role.authorityName}
+		</if>
+		<if test="role.type=='-1' and role.userCode!=null and role.userCode!=''">
+			and EXISTS (
+				SELECT
+					1
+				FROM
+					sys_roles_authorities rah,
+					sys_roles rle,
+					sys_users sus,
+					sys_users_roles sur
+				WHERE
+					sus.USER_ID = sur.USER_ID
+				AND rle.ROLE_ID = sur.ROLE_ID
+				AND rle.ROLE_ID = rah.ROLE_ID
+				AND rah.AUTHORITY_ID = a.AUTHORITY_ID
+		    	AND sus.user_code=#{role.userCode}
+            )
+		</if>
+		ORDER BY 
+			a.AUTHORITY_ID ASC
+	</select>
+		
+	<select id="getRoleAuthority" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO" resultType="com.huayu.irla.core.user.vo.RoleInfoVO">
+		SELECT
+        	t.authorityId AS authorityId,
+        	c.RESOURCE_ID AS resourceId
+        FROM
+        	sys_authorities_resources c
+        RIGHT JOIN (
+        	SELECT
+        		a.AUTHORITY_ID AS authorityId,
+        		a.AUTHORITY_MARK AS authorityMark,
+        		b.ROLE_ID
+        	FROM
+        		sys_authorities a
+        	JOIN sys_roles_authorities b ON a.AUTHORITY_ID = b.AUTHORITY_ID
+        	WHERE
+        		b.ROLE_ID = #{role.roleId}
+        ) t ON t.authorityId = c.AUTHORITY_ID
+                WHERE
+		1=1
+		 <if test="role.roleId!=null and role.roleId!=''">
+			and t.ROLE_ID = #{role.roleId}
+		</if>
+	</select>
+
+	<insert id="addRole" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO">
+	 INSERT INTO sys_roles                         
+		(                                          
+            ROLE_NAME ,                            
+            ROLE_DESC  ,                           
+            ISSYS , 
+            TYPE,  
+            MODULE_ID,                             
+            created_by    ,                           
+            creation_date,                           
+            last_updated_by ,                             
+            last_update_date,                           
+            is_valid   ,                           
+            description
+		)                                        
+		VALUES                                   
+		(                                        
+		 #{roleName},                            
+		 #{roleDesc},                            
+		 #{issys},                               
+		 #{type},                                 
+		 #{moduleId},                            
+		 #{createdBy},                             
+         SYSDATE(),                              
+		 #{createdBy},                             
+		 SYSDATE(),                              
+		 '1', 
+		 #{description}
+		); 
+	</insert>
+
+
+   	<insert id="addRoleUser" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO">
+    	 INSERT INTO sys_users_roles                         
+    		(                   
+                ROLE_ID ,  
+                USER_ID ,                 
+                created_by ,                           
+                creation_date,                           
+                last_updated_by ,                             
+                last_update_date,                           
+                is_valid                              
+    		)                                        
+    		VALUES                                   
+    		(       
+    		 #{roleId},
+    		 #{userId},                           
+    		 #{createdBy},                             
+             SYSDATE(),                              
+    		 #{createdBy},                             
+    		 SYSDATE(),                              
+    		 '1'
+    		); 
+    	</insert>
+    	
+    <insert id="addRoleAuthority" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO">
+    	 INSERT INTO sys_roles_authorities                         
+    		(                   
+                ROLE_ID ,  
+                AUTHORITY_ID ,                 
+                created_by ,                           
+                creation_date,                           
+                last_updated_by ,                             
+                last_update_date,                           
+                is_valid                              
+    		)                                        
+    		VALUES                                   
+    		(       
+    		 #{roleId},
+    		 #{authorityId},                           
+    		 #{createdBy},                             
+             SYSDATE(),                              
+    		 #{createdBy},                             
+    		 SYSDATE(),                              
+    		 '1'
+    		); 
+    	</insert>
+
+	<update id="updateRole" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO">
+		UPDATE sys_roles
+		SET                                                 
+		 ROLE_NAME           =#{roleName},                   
+		 ROLE_DESC           =#{roleDesc},                   
+		 ISSYS               =#{issys},                      
+		 TYPE                =#{type},                       
+		 MODULE_ID           =#{moduleId},                   
+		 last_updated_by            =#{lastUpdatedBy},                   
+		 last_update_date         =SYSDATE(),                     
+		 <if test="isValid !=null">                           
+	     is_valid             =#{isValid},                      
+		</if>                                                
+		 description              =#{description}         
+		WHERE                                                
+		ROLE_ID = #{roleId}
+	</update>
+
+
+        <update id="updateRoleUser" parameterType="com.huayu.irla.core.user.vo.RoleInfoVO">
+        		UPDATE sys_users_roles
+        		SET  
+        		 <if test="isValid !=null">                           
+        	     is_valid             =#{isValid} ,                   
+        		</if>  
+        		last_updated_by            =#{lastUpdatedBy},                   
+		        last_update_date         =SYSDATE()                                             
+        		WHERE                                                
+        		UR_ID = #{urId}
+        </update>
+
+
+	<delete id="deleteRole" parameterType="int"> 
+		DELETE FROM 
+		sys_roles 
+		WHERE 
+		ROLE_ID = #{roleId jdbcType=INTEGER} 
+	</delete>
+ 
+ 
+    <delete id="deleteRoleUser" parameterType="int"> 
+		DELETE FROM 
+		sys_users_roles 
+		WHERE 
+		UR_ID = #{urId jdbcType=INTEGER} 
+	</delete> 
+
+	<delete id="deleteRoleAuthority" parameterType="int"> 
+		DELETE FROM 
+		sys_roles_authorities 
+		WHERE 
+		ROLE_ID = #{roleId jdbcType=INTEGER} 
+	</delete>
+	
+	
+	<delete id="deleteRoleUserUserID" parameterType="int"> 
+		DELETE FROM 
+		sys_users_roles 
+		WHERE 
+		USER_ID = #{userId jdbcType=INTEGER} 
+	</delete> 
+
+</mapper>  

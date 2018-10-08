@@ -1,0 +1,37 @@
+ <script src="/ietlAdmin/js/log/logManage.js"></script>
+<script type="text/javascript">
+	$(function() {
+		log.crumb();
+	});
+</script>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+       <h3 class="panel-title" style = "color:red">错误日志<font  style ="color:red;">（仅显示当前时间10天内的日志）</font></h3>
+    </div>
+     <div class="panel-body pre-scrollable" style="overflow: auto; ">
+	<ul id="log_Breadcrumbs" class="ico_a"   style ="display: none"> 
+                         </ul> 
+                         </div>
+                         </div>
+
+<!-- <form id="searchFrom"  class="form-horizontal" role="form"	>
+		<div class="form-group">
+			 <label class="col-sm-2" style="width: auto; margin-top: 6px" for="dictionaryKey">属性名:</label>
+			<div class="col-sm-2">
+			<input type="text" class="form-control" name="dictionaryKey" id="dictionaryKey_search" placeholder="请输入....">
+			</div> 
+			<label class="col-sm-2" style="width: auto; margin-top: 6px" for="remark">描述:</label>
+			<div class="col-sm-3">
+			<input type="text" class="form-control" name="description" id="remark_search" placeholder="请输入....">
+			</div>
+			 <div class="col-sm-2"> 
+			<input type="button" class="btn btn-primary" id = "search" onclick="datadict.searchBtn()" value = "查询"/>
+			<input type="button" class="btn btn-primary" id = "empty" onclick="datadict.empty()" value = "清空"/>
+			<input class="btn btn-primary privilege-hints" type="button"  pri_url="/ws/addDataDict" onclick="datadict.showModel()" value="添加" />
+				</div>
+	</div>
+	</form> -->
+
+
+<!-- <table id="log_table"></table> -->

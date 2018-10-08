@@ -1,0 +1,54 @@
+@charset "UTF-8";
+.addtable{
+	width: 100%;
+}
+.addtable td{
+	width: 50%;
+	text-align: right;
+	padding-right: 30px;
+}
+.addtable input{
+	width: 240px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 4px;
+    margin: 10px;
+}
+.addtable select{
+	width: 240px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 4px;
+    margin: 10px;
+}
+.updatetable{
+	width: 100%;
+}
+.updatetable td{
+	width: 50%;
+	text-align: right;
+	padding-right: 30px;
+}
+.updatetable input{
+	width: 240px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 4px;
+    margin: 10px;
+}
+.updatetable select{
+	width: 240px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 4px;
+    margin: 10px;
+}
+#isImg_Course{
+	height: 13px;
+	width: 13px;
+}
+#uploadImgDiv_Course:after{
+	content: '';
+	display: block;
+	clear: both;
+}

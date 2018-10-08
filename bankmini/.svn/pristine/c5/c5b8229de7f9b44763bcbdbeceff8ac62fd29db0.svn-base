@@ -1,0 +1,226 @@
+<link rel="stylesheet" type="text/css"
+	href="/ietlAdmin/css/webuploader.css">
+<script type="text/javascript"
+	src="/ietlAdmin/js/courseware/webuploader.js"></script>
+<script src="/ietlAdmin/js/courseware/coursewarenew.js"></script>
+
+<style type="text/css">
+#thelist  li {
+	background-color: #ded9d9
+}
+
+.hideClass {
+	display: none;
+}
+
+.hideTranClass {
+	display: none;
+}
+</style>
+<div class="panel-group" id="word_show">
+	<div class="panel panel-info">
+		<div class="panel-heading">
+			<h3 class="panel-title">资源上传</h3>
+		</div>
+		<div class="panel-body">
+			<form id="BacklogFrom" class="form-horizontal" role="form">
+				<input type="hidden" name="pws_status" id="pws_status">
+				<div class="record_div">
+					<ul class="nav nav-tabs" style="width: 60%;">
+						<li class="active" style="width: 15%;"><a data-toggle="tab"
+							onclick="coursenew.changeType(0)">资源上传</a></li>
+						<li style="width: 15%;"><a data-toggle="tab"
+							onclick="coursenew.changeType(1)">已上传资源</a></li>
+						<!-- <li style="width: 15%;"><a data-toggle="tab"
+							onclick="coursenew.changeType(2)">已上传文档资源</a></li> -->
+					</ul>
+				</div>
+			</form>
+
+			<!--上传资源-->
+			<div class="panel" id="myUploadedFile">
+				<fieldset
+					style="padding: .35em .625em .75em; margin: 0 2px; border: 1px solid silver">
+					<legend style="padding: .5em; border: 0; width: auto;">资源上传</legend>
+					<div id="uploader" class="wu-example">
+						<!--用来存放文件信息-->
+						<ul id="thelist" class="uploader-list"></ul>
+						<div class="btns" style="margin-top: 10px;">
+							<div id="picker" class="btns" style="float: left;"></div>
+							<button id="ctlBtn" class="btn btn-default"
+								style="margin-left: 5px; height: 40px;">开始上传</button>
+						</div>
+					</div>
+				</fieldset>
+				<hr>
+			</div>
+
+
+			<!--视频资源查看-->
+			<div class="panel panel-success" id="uploadFileTranscoding">
+				<div class="panel-body">
+					<form id="searchUploadFileFrom" class="form-horizontal" role="form">
+						<div class="form-group">
+							<label class="col-sm-2" style="width: auto; margin-top: 6px"
+								for="">资源名称</label>
+							<div class="col-sm-2">
+								<input type="text" class="form-control"
+									name="searchResourceName" id="searchResourceName"
+									placeholder="请输入....">
+							</div>
+							<label class="col-sm-2" style="width: auto; margin-top: 6px"
+								for="">文件状态</label>
+							<div class="col-sm-2">
+								<select id="searchResourceStatus" class="form-control">
+									<option value="">-----</option>
+									<option value="0">上传中</option>
+									<option value="1">等待转码</option>
+									<option value="2">转码进行中</option>
+									<option value="3">转码失败</option>
+									<option value="4">转码成功</option>
+								</select>
+							</div>
+							<label class="col-sm-2" style="width: auto; margin-top: 6px"
+								for="">资源上传时间</label>
+							<div class="col-sm-2">
+								<div class="input-group date form_date" data-date=""
+									data-date-format="yyyy-mm-dd" data-link-field="date_action"
+									data-link-format="yyyy-mm-dd">
+									<input size="20" type="text" class="form-control"
+										id="resUploadStartTime" name="endTime" value="" readonly>
+									<span class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"> </span>
+									</span>
+								</div>
+							</div>
+							<div style="float: left; line-height: 34px;">到</div>
+							<div class="col-sm-2">
+								<div class="input-group date form_date" data-date=""
+									data-date-format="yyyy-mm-dd" data-link-field="date_action"
+									data-link-format="yyyy-mm-dd">
+									<input size="20" type="text" class="form-control"
+										id="resUploadEndTime" name="endTime" value="" readonly>
+									<span class="input-group-addon"> <span
+										class="glyphicon glyphicon-calendar"> </span>
+									</span> 
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-sm-2">
+								<input type="button" class="btn btn-primary " id="search_myLog"
+									onclick="coursenew.searchFileTranscoding()" value="查询" /> <input
+									type="reset" class="btn btn-primary " id="reset_myLog"
+									value="清空" />
+							</div>
+						</div>
+					</form>
+					<!-- 展示列表 -->
+					<table id="fileTransCodingList"></table>
+				</div>
+			</div>
+
+
+			<!--挂资源关系-->
+			<div id="mountCatalogDiv" class="modal fade panel-success"
+				data-backdrop="static" role="dialog" style="display: none;">
+				<div class="modal-dialog" style="width: 1100px; height: 1000px">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">维护资源关系</h4>
+						</div>
+						<div class="modal-body">
+							<form class="form-horizontal" role="form" id="addUploadFileForm">
+								<input id="id" name="id" type="text" style="display: none">
+
+								<div class="form-group">
+									<label class="col-md-2 control-label">资源名称</label>
+									<div class="col-md-8">
+										<input class="form-control" id="uploadResourceName"
+											type="text" name="uploadResourceName" disabled="disabled"></input>
+									</div>
+								</div>
+
+
+								<div class="form-group" id="divDeployRange">
+									<label class="col-md-2 control-label">资源需要挂的课程<font
+										color="red">&ensp;*</font></label>
+									<div class="col-md-5">
+										<div style="width: 400px">
+											<div class="input-group clearCircle">
+												<input class="nodeName form-control" id="fileCatalogName"
+													name="fileCatalogName" type="text"
+													class="form-control clearCircle" readonly="readonly"
+													placeholder="资源需要挂的课程"></input> <span
+													class="input-group-btn">
+													<button id="choseCatalogName"
+														class="btn btn-default clearCircle" type="button">
+														<span class="glyphicon glyphicon-chevron-down"></span>
+													</button>
+												</span>
+											</div>
+											<input type="text" class="nodeValue form-control"
+												id="fileCatalogCode" name="fileCatalogCode"
+												style="display: none;"></input>
+											<div id="treeCatalog"
+												style="display: none; width: 400px; z-index: 1000; position: absolute;"></div>
+										</div>
+									</div>
+									<div class="col-md-2">
+										<button type="button" class="btn btn-default"
+											onclick="coursenew.restVal()">清空</button>
+									</div>
+								</div>
+								
+		
+								<div class="form-group">
+									<label class="col-md-2 control-label">是否公开<font
+										color="red">&ensp;*</font></label>
+									<div class="col-md-2">
+										<select id="isPublic" name="isPublic" class="form-control">
+											<option value="1" selected="selected">公开</option>
+											<option value="0" selected="selected">收费</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-2 control-label">截图时间点</label>
+									<div class="col-md-2">
+										<input class="form-control" id="uploadFilePicTime" type="text"
+											name="uploadFilePicTime"></input>
+									</div>
+									<lable class="col-md-3 control-label"
+										style="text-align: left;padding-left: 0px;">默认为第一帧的图片,单位为秒</lable>
+								</div>
+								<div class="form-group">
+									<label class="col-md-2 control-label">资源拥有者</label>
+									<div class="col-md-2">
+										<input class="form-control" id="uploadFileOwner" type="text"
+											name="uploadFileOwner"></input>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-2 control-label">资源描述</label>
+									<div class="col-md-8">
+										<textarea class="form-control"
+											style="resize: none; verflow: scroll; height: 200px; overflow-x: hidden;"
+											maxlength="500" id="uploadFileContent" type="textarea"
+											name="uploadFileContent" placeholder="请输入资源描述内容"></textarea>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button id="uploadFileSave" type="button" class="btn btn-primary"
+								onclick="coursenew.saveUploadFileRelation()">保存</button>
+							<button type="button" class="btn btn-default"
+								data-dismiss="modal">取消</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

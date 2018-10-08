@@ -1,0 +1,41 @@
+<script src="/ietlAdmin/js/cache/cacheManager.js"></script> 
+<script type="text/javascript">
+	$(function() {
+		cacheHy.initCacheNameList();
+	});
+</script>
+<div class="panel panel-default">
+	<div class="panel-heading"><h4>缓存管理&会话清理</h4></div>
+	<div class="panel-body">
+		<div class=".container">
+			<div class="row">
+				<div class="col-md-2" style="width: auto; margin-top: 5px">缓存块名称</div>
+				<div class="col-md-2" style="float: -30px">
+					<select id="cacheNameHy" name="" class="selectpicker"  title="请选择缓存块名称"  data-live-search="true">
+
+					</select>
+				</div>
+				<div class="col-md-2">
+					<button type="button" class="btn btn-info privilege-hints" pri_url="/ws/clearCacheByName" onclick="cacheHy.clearCacheByName()">清空缓存</button>
+				</div>
+				<div class="col-md-2">
+					<button type="button" class="btn btn-success privilege-hints" pri_url="/ws/clearCache" onclick="cacheHy.clearAllCache()">清空所有缓存</button>
+				</div>
+				<div class="col-md-2">
+				    <button type="button" class="btn btn-success"  onclick="cacheHy.remoteClearCache()">远程清空缓存</button>
+				</div>
+				<div class="col-md-2">
+				    <button type="button" class="btn btn-danger"  onclick="cacheHy.remoteRedisCache()">清理已挂起会话</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+

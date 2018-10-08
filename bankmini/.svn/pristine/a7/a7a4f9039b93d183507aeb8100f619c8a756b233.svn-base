@@ -1,0 +1,844 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.courseware.ICoursewareDao">	
+	<insert id="addVisitNum" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		INSERT INTO irla_resource_visit_t (
+			resource_code,
+			course_code,
+			visit_num,
+			last_updated_by,
+			last_update_date
+		)
+		VALUES
+			(
+			#{course.resourceCode}, 
+		    #{course.courseCode},
+		    1,
+		    #{course.lastUpdatedBy},
+		    sysdate()
+		)
+	</insert>
+	
+	<update id="updateVisitNum" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		update irla_resource_visit_t vit
+		set vit.visit_num = vit.visit_num+1
+		where vit.resource_code = #{course.resourceCode}
+		  and vit.course_code = #{course.courseCode}
+	</update>
+	
+	<select id="getVisitNum" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO" resultType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		select vit.resource_code resourceCode,
+		       vit.course_code  courseCode,
+		       vit.visit_num visitNum,
+		       vit.last_updated_by lastUpdatedBy,
+		       vit.last_update_date lastUpdateDate
+		from  irla_resource_visit_t
+		where vit.resource_code = ${course.resourceCode}
+		  and vit.course_code=${course.courseCode}
+	</select>
+	
+	
+	<insert id="addResCollect" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		INSERT INTO irla_res_user_collect_t (
+			user_code,
+			resource_code,
+			course_code,
+			created_by,
+			creation_date
+		)
+		VALUES
+			(
+			#{course.createdBy}, 
+		    #{course.resourceCode},
+		    #{course.courseCode},
+		    #{course.createdBy},
+		    sysdate()
+		)
+	</insert>
+	
+	<delete id="deleteResCollect" parameterType="int">
+		delete FROM irla_res_user_collect_t
+		where id = #{id jdbcType=INTEGER}
+	</delete>
+	
+	<select id="getResCollect" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO" resultType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		select vit.id,
+		       a.resource_name as resourceName,
+		       a.img_name as imgName,
+		       vit.resource_code resourceCode,
+		       vit.course_code courseCode,
+		       vit.user_code createdBy,
+		       vit.creation_date creationDate
+		from  irla_res_user_collect_t vit
+		left join
+		irla_resource_t a 
+		on
+		vit.resource_code = a.resource_code
+		where 
+		1=1
+		<if test="course.resourceCode!=null and course.resourceCode!=''">
+			and vit.resource_code = #{course.resourceCode}
+		</if>
+		<if test="course.createdBy!=null and course.createdBy!=''">
+			and vit.user_code = #{course.createdBy}
+		</if>
+		<if test="course.courseCode!=null and course.courseCode!=''">
+			and vit.course_code = #{course.courseCode}
+		</if>
+		ORDER BY
+			vit.creation_date DESC
+	</select>
+	
+	<select id="getResCollectCount" resultType="int" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		select count(1)
+		from  irla_res_user_collect_t vit
+		where 
+		1=1
+		<if test="course.resourceCode!=null and course.resourceCode!=''">
+			and vit.resource_code = #{course.resourceCode}
+		</if>
+		<if test="course.createdBy!=null and course.createdBy!=''">
+			and vit.user_code = #{course.createdBy}
+		</if>
+		<if test="course.courseCode!=null and course.courseCode!=''">
+			and vit.course_code = #{course.courseCode}
+		</if>
+	</select>
+	
+	<select id="getOtherCourse" parameterType="com.huayu.irla.core.courseware.vo.CourseInfoVO" resultType="com.huayu.irla.core.courseware.vo.CourseInfoVO">
+		SELECT
+			ct.id,
+			ct.course_code courseCode,
+			ct.course_name courseName,
+			ct.category_code categoryCode,
+			ct.course_img courseImg,
+			ct.created_by createdBy,
+			ct.creation_date creationDate,
+			ct.last_updated_by lastUpdatedBy,
+			ct.last_update_date lastUpdateDate,
+			ct.description,
+			ct.is_valid isValid,
+			ifnull(tmp.visitNum, 0) visitNum,
+			ifnull(a.collectNum, 0) collectNum
+		FROM
+			irla_courseware_t ct
+		LEFT JOIN (
+			SELECT
+				rvt.course_code,
+				sum(rvt.visit_num) visitNum
+			FROM
+				irla_resource_visit_t rvt
+			GROUP BY
+				rvt.course_code
+		) tmp ON tmp.course_code = ct.course_code
+		LEFT JOIN (
+			SELECT course_code,count(1) as collectNum FROM irla_res_user_collect_t GROUP BY
+				course_code
+		) a ON a.course_code = ct.course_code
+		where
+		ct.is_valid=1 
+		<if test="course.categoryCode!=null and course.categoryCode!=''">
+			and ct.category_code = #{course.categoryCode}
+		</if>
+		<if test="course.otherCourse == null or course.otherCourse == ''">
+			and  ct.course_code = #{course.courseCode}
+		</if>
+		<if test="course.otherCourse!=null and course.otherCourse!=''">
+			and  ct.course_code != #{course.courseCode}
+			ORDER BY
+			rand()
+			LIMIT 5
+		</if>
+	</select>
+	
+	
+	<select id="findCourseInfo" parameterType="com.huayu.irla.core.courseware.vo.CourseInfoVO" resultType="com.huayu.irla.core.courseware.vo.CourseInfoVO">
+		SELECT
+			ct.id,
+			ct.course_code courseCode,
+			ct.course_name courseName,
+			ct.category_code categoryCode,
+			ct.course_img courseImg,
+			ct.created_by createdBy,
+			ct.creation_date creationDate,
+			ct.last_updated_by lastUpdatedBy,
+			ct.last_update_date lastUpdateDate,
+			ct.description,
+			ct.is_valid isValid,
+			ifnull(tmp.visitNum, 0) visitNum,
+			ifnull(a.collectNum, 0) collectNum
+		FROM
+			irla_courseware_t ct
+		LEFT JOIN (
+			SELECT
+				rvt.course_code,
+				sum(rvt.visit_num) visitNum
+			FROM
+				irla_resource_visit_t rvt
+			GROUP BY
+				rvt.course_code
+		) tmp ON tmp.course_code = ct.course_code
+		LEFT JOIN (
+			SELECT course_code,count(1) as collectNum FROM irla_res_user_collect_t GROUP BY
+				course_code
+		) a ON a.course_code = ct.course_code
+		where
+		ct.is_valid=1 
+		<if test="course.courseCode!=null and course.courseCode!=''">
+			and  ct.course_code = #{course.courseCode}
+		</if>
+		<if test="course.id!=null and course.id!=''">
+			and ct.id = #{course.id}
+		</if>
+		<if test="course.search!=null and course.search!=''">
+			and ct.course_name like CONCAT('%',#{course.search},'%')
+		</if>
+		<if test="course.categoryCode!=null and course.categoryCode!=''">
+			and ct.category_code = #{course.categoryCode}
+		</if>
+		
+		<if test="course.dirCode!=null and course.dirCode!=''">
+			and EXISTS (
+				SELECT
+					1
+				FROM
+					irla_category_t rt,
+					irla_category_t yt
+				WHERE
+					rt.category_code = ct.category_code
+				AND rt.category_level = 2
+				AND rt.parent_category_code = yt.category_code
+				AND yt.category_level = 1
+				AND yt.category_code =  #{course.dirCode}
+			)
+		</if>
+		<if test="course.orderType==null or course.orderType=='0'.toString()">
+		ORDER BY
+			tmp.visitNum DESC
+		</if>
+		<if test="course.orderType=='1'.toString()">
+		ORDER BY
+			ct.last_update_date DESC
+		</if>
+		<if test="course.offset!=null and course.limit !=null">
+			LIMIT
+			#{course.offset,jdbcType=INTEGER},#{course.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	
+	<select id="findCourseInfoCount" parameterType="com.huayu.irla.core.courseware.vo.CourseInfoVO" resultType="java.lang.Integer">
+	   	SELECT
+			count(1)
+		FROM
+			irla_courseware_t ct
+		where
+		ct.is_valid=1
+		<if test="course.courseCode!=null and course.courseCode!=''">
+			and  ct.course_code = #{course.id}
+		</if>
+		<if test="course.id!=null and course.id!=''">
+			and ct.id = #{course.id}
+		</if>
+		<if test="course.search!=null and course.search!=''">
+			and ct.course_name like CONCAT('%',#{course.search},'%')
+		</if>
+		<if test="course.categoryCode!=null and course.categoryCode!=''">
+			and ct.category_code = #{course.categoryCode}
+		</if>
+		<if test="course.dirCode!=null and course.dirCode!=''">
+			and EXISTS (
+				SELECT
+					1
+				FROM
+					irla_category_t rt,
+					irla_category_t yt
+				WHERE
+					rt.category_code = ct.category_code
+				AND rt.category_level = 2
+				AND rt.parent_category_code = yt.category_code
+				AND yt.category_level = 1
+				AND yt.category_code =  #{course.dirCode}
+			)
+		</if>
+	</select>
+	
+	
+	<select id="findCourseware" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO" resultType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		SELECT
+		    a.id,
+			a.resource_Id AS resourceId,
+			a.resource_code AS resourceCode,
+			c.course_code AS courseCode,
+			c.course_name AS courseName,
+			a.resource_name AS resourceName,
+			a.resource_type AS resourceType,
+			a.resource_size AS resourceSize,
+			a.resource_length AS resourceLength,
+			a.resource_owner AS resourceOwner,
+			a.attachment_name AS attachmentName,
+			a.img_name AS imgName,
+			a.is_public AS isPublic,
+			a.sequence_number AS sequenceNumber,
+			a.is_valid AS isValid,
+			a.creation_date AS creationDate,
+			a.last_updated_by AS lastUpdatedBy,
+			f.user_name AS lastUpdatedName,
+			a.last_update_date AS lastUpdateDate,
+			a.description,
+			ifnull(b.collectNum,0) collectNum,
+	        ifnull(g.visit_num,0) visitNum
+	        <if test="course.createdBy!=null and course.createdBy!=''">
+	        	,IF(ct.id is null,0,1) isCollect
+	        </if>
+		FROM
+			irla_courseware_t c,
+			irla_resource_t a
+		LEFT JOIN sys_userinfo_t e ON a.created_by = e.user_code
+		LEFT JOIN sys_userinfo_t f ON a.last_updated_by = f.user_code
+		LEFT JOIN irla_resource_visit_t g on g.course_code=a.course_code and g.resource_code=a.resource_code
+		LEFT JOIN (
+			SELECT resource_code,count(1) as collectNum FROM irla_res_user_collect_t GROUP BY
+				resource_code
+		) b ON b.resource_code = a.resource_code
+		<if test="course.createdBy!=null and course.createdBy!=''">
+	   		LEFT JOIN irla_res_user_collect_t ct on ct.resource_code = a.resource_code and ct.user_code=#{course.createdBy}
+    	</if>
+		WHERE
+			 c.course_code = a.course_code
+		<if test="course.id!=null and course.id!=''">
+			and a.id = #{course.id}
+		</if>
+		<if test="course.resourceId!=null and course.resourceId!=''">
+			and a.resource_Id = #{course.resourceId}
+		</if>
+		<if test="course.isValid!=null and course.isValid!=''">
+			and a.is_valid = #{course.isValid}
+		</if>
+		<if test="course.search!=null and course.search!=''">
+			and a.resource_name like CONCAT('%',#{course.search},'%')
+		</if>
+		<if test="course.resourceName!=null and course.resourceName!=''">
+			and a.resource_name like
+			CONCAT('%',#{course.resourceName},'%')
+		</if>
+		<if test="course.isPublic!=null and course.isPublic!=''">
+			and a.is_public like
+			CONCAT('%',#{course.isPublic},'%')
+		</if>
+		<if test="course.resourceCode!=null and course.resourceCode!=''">
+			and a.resource_code = #{course.resourceCode}
+		</if>
+		<if test="course.resourceType!=null and course.resourceType!=''">
+			and a.resource_type = #{course.resourceType}
+		</if>
+		<if test="course.courseCode!=null and course.courseCode!=''">
+			and a.course_code = #{course.courseCode}
+		</if>
+		order by IFNULL(a.sequence_number,10000) asc
+		<if test="course.createdBy!=null and course.createdBy!=''">
+			,ct.id
+		</if>
+		<if test="course.offset!=null and course.limit !=null">
+			LIMIT
+			#{course.offset,jdbcType=INTEGER},#{course.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	
+	<select id="findCoursewareCount" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO" resultType="java.lang.Integer">
+		SELECT
+		   count(1)
+		FROM
+			irla_resource_t a where (1=1)
+		<if test="course.id!=null and course.id!=''">
+			and a.id = #{course.id}
+		</if>
+		<if test="course.resourceId!=null and course.resourceId!=''">
+			and a.resource_Id = #{course.resourceId}
+		</if>
+		<if test="course.isValid!=null and course.isValid!=''">
+			and a.is_valid = #{course.isValid}
+		</if>
+		<if test="course.search!=null and course.search!=''">
+			and a.resource_name like CONCAT('%',#{course.search},'%')
+		</if>
+		<if test="course.resourceName!=null and course.resourceName!=''">
+			and a.resource_name like
+			CONCAT('%',#{course.resourceName},'%')
+		</if>
+		<if test="course.isPublic!=null and course.isPublic!=''">
+			and a.is_public like
+			CONCAT('%',#{course.isPublic},'%')
+		</if>
+		<if test="course.resourceCode!=null and course.resourceCode!=''">
+			and a.resource_code = #{course.resourceCode}
+		</if>
+		<if test="course.resourceType!=null and course.resourceType!=''">
+			and a.resource_type = #{course.resourceType}
+		</if>
+		<if test="course.courseCode!=null and course.courseCode!=''">
+			and a.course_code = #{course.courseCode}
+		</if>
+	</select>
+	
+	<select id="findCoursewareMaintain" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO" resultType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		SELECT
+			a.resource_Id AS resourceId,
+			Group_concat(c.course_code separator '#') AS courseCode,
+			Group_concat(c.course_name separator '#') AS courseName,
+			a.resource_code AS resourceCode,
+			a.resource_name AS resourceName,
+			a.resource_type AS resourceType,
+			a.resource_size AS resourceSize,
+			a.resource_length AS resourceLength,
+			a.attachment_name AS attachmentName,
+			a.img_name AS imgName,
+			a.is_public AS isPublic,
+			a.sequence_number AS sequenceNumber,
+			a.is_valid AS isValid,
+			a.last_updated_by AS lastUpdatedBy,
+			f.user_name AS lastUpdatedName,
+			a.last_update_date AS lastUpdateDate
+		FROM
+			irla_courseware_t c,
+			irla_resource_t a
+		LEFT JOIN sys_userinfo_t e ON a.created_by = e.user_code
+		LEFT JOIN sys_userinfo_t f ON a.last_updated_by = f.user_code
+		WHERE
+			 c.course_code = a.course_code
+		<if test="course.id!=null and course.id!=''">
+			and a.id = #{course.id}
+		</if>
+		<if test="course.resourceId!=null and course.resourceId!=''">
+			and a.resource_Id = #{course.resourceId}
+		</if>
+		<if test="course.isValid!=null and course.isValid!=''">
+			and a.is_valid = #{course.isValid}
+		</if>
+		<if test="course.search!=null and course.search!=''">
+			and (a.resource_name like CONCAT('%',#{course.search},'%')
+			or c.course_name like CONCAT('%',#{course.search},'%'))
+		</if>
+		<if test="course.resourceName!=null and course.resourceName!=''">
+			and a.resource_name like
+			CONCAT('%',#{course.resourceName},'%')
+		</if>
+		<if test="course.isPublic!=null and course.isPublic!=''">
+			and a.is_public like
+			CONCAT('%',#{course.isPublic},'%')
+		</if>
+		<if test="course.resourceCode!=null and course.resourceCode!=''">
+			and a.resource_code = #{course.resourceCode}
+		</if>
+		<if test="course.resourceType!=null and course.resourceType!=''">
+			and a.resource_type = #{course.resourceType}
+		</if>
+		<if test="course.courseCode!=null and course.courseCode!=''">
+			and a.course_code = #{course.courseCode}
+		</if>
+			GROUP BY
+				a.resource_Id,
+				a.resource_name,
+				a.resource_type,
+				a.resource_size,
+				a.resource_length,
+				a.attachment_name,
+				a.img_name,
+				a.is_public,
+				a.sequence_number,
+				a.is_valid,
+				a.last_updated_by,
+				a.last_update_date
+			ORDER BY a.resource_Id DESC
+		<if test="course.offset!=null and course.limit !=null">
+			LIMIT
+			#{course.offset,jdbcType=INTEGER},#{course.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	
+	<select id="findCoursewareMaintainCount" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO" resultType="java.lang.Integer">
+	     select count(DISTINCT a.resource_id) from irla_resource_t a
+	     where (1=1)
+	     <if test="course.id!=null and course.id!=''">
+			and a.id = #{course.id}
+		</if>
+		<if test="course.resourceId!=null and course.resourceId!=''">
+			and a.resource_Id = #{course.resourceId}
+		</if>
+		<if test="course.isValid!=null and course.isValid!=''">
+			and a.is_valid = #{course.isValid}
+		</if>
+		<if test="course.search!=null and course.search!=''">
+			and (a.resource_name like CONCAT('%',#{course.search},'%')
+			or exists(select 1 from irla_courseware_t ct where ct.course_code=a.course_code and ct.course_name like CONCAT('%',#{course.search},'%')))
+		</if>
+		<if test="course.resourceName!=null and course.resourceName!=''">
+			and a.resource_name like
+			CONCAT('%',#{course.resourceName},'%')
+		</if>
+		<if test="course.isPublic!=null and course.isPublic!=''">
+			and a.is_public like
+			CONCAT('%',#{course.isPublic},'%')
+		</if>
+		<if test="course.resourceCode!=null and course.resourceCode!=''">
+			and a.resource_code = #{course.resourceCode}
+		</if>
+		<if test="course.resourceType!=null and course.resourceType!=''">
+			and a.resource_type = #{course.resourceType}
+		</if>
+		<if test="course.courseCode!=null and course.courseCode!=''">
+			and a.course_code = #{course.courseCode}
+		</if>
+	</select>
+	
+	<update id="updateSequenceNumber" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		UPDATE irla_resource_t
+		SET sequence_number = #{course.sequenceNumber}
+		WHERE id = #{course.id}
+	</update>
+	<update id="updateImgAddre" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		UPDATE irla_resource_t SET
+		<if test="isValid !=null and isValid!=''">
+			is_valid = #{isValid},
+		</if>
+		<if test="sequenceNumber !=null and sequenceNumber !=''">
+			sequence_number = #{sequenceNumber},
+		</if>
+		<if test="isPublic !=null and isPublic !=''">
+			is_public = #{isPublic},
+		</if>
+		img_name = #{imgName},
+		last_update_date = #{lastUpdateDate},
+		last_updated_by = #{lastUpdatedBy}
+		WHERE
+		id = #{id}
+	</update>
+
+
+
+	<delete id="deleteCourseFile" parameterType="int">
+		DELETE FROM
+		irla_resource_t
+		WHERE
+		id = #{id jdbcType=INTEGER}
+	</delete>
+	
+	<delete id="deleteAllVideos" parameterType="int">
+		DELETE FROM
+		irla_resource_t
+		WHERE
+		resource_Id = #{resourceId jdbcType=INTEGER}
+	</delete>
+
+
+	<!-- upload file operate start -->
+	<select id="getUploadFile" resultType="com.huayu.irla.core.courseware.vo.FileUploadItemVO" parameterType="com.huayu.irla.core.courseware.vo.FileUploadItemVO">
+		SELECT
+		ft.id,
+		ft.resource_name resourceName,
+		ft.resource_path resourcePath,
+		ft.md5,
+		ft.app_id appId,
+		ft.enabled,
+		ft.created_by createdBy,
+		ft.creation_date creationDate,
+		ft.last_updated_by lastUpdatedBy,
+		ft.last_update_date lastUpdateDate,
+		ft.description,
+		ft. STATUS,
+		IF (
+		relt.upload_file_id IS NULL,
+		'0',
+		'1'
+		) showTransCode
+		FROM
+		irla_res_upload_file_t ft
+		LEFT JOIN irla_res_upload_file_relation_t relt ON ft.id = relt.upload_file_id
+		where (1=1)
+		<if test="uploadFile.id!=null and uploadFile.id!=''">
+			and ft.id=#{uploadFile.id}
+		</if>
+		<if test="uploadFile.md5!=null and uploadFile.md5!=''">
+			and ft.md5=#{uploadFile.md5}
+		</if>
+		<if test="uploadFile.resourceName!=null and uploadFile.resourceName!=''">
+			and ft.resource_name like CONCAT('%',#{uploadFile.resourceName},'%')
+		</if>
+		<if test="uploadFile.createdBy!=null and uploadFile.createdBy!=''">
+			and ft.created_by=#{uploadFile.createdBy}
+		</if>
+		<if test="uploadFile.status!=null and uploadFile.status!=''">
+			and ft.status=#{uploadFile.status}
+		</if>
+		<if test="uploadFile.startTime!=null and uploadFile.startTime !=''">
+			AND ft.last_update_date <![CDATA[>=]]>str_to_date(#{uploadFile.startTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s')
+		</if>
+		<if test="uploadFile.endTime!=null and uploadFile.endTime !=''">
+			AND ft.last_update_date <![CDATA[<=]]>date_add(str_to_date(#{uploadFile.endTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s'),interval 1 day)
+		</if>
+		order by ft.creation_date desc
+		<if test="uploadFile.offset!=null and uploadFile.limit !=null">
+			LIMIT
+			#{uploadFile.offset,jdbcType=INTEGER},#{uploadFile.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+
+	<select id="getUploadFileCount" resultType="java.lang.Integer" parameterType="com.huayu.irla.core.courseware.vo.FileUploadItemVO">
+		select
+		count(1)
+		from irla_res_upload_file_t ft
+		where (1=1)
+		<if test="uploadFile.id!=null and uploadFile.id!=''">
+			and ft.id=#{uploadFile.id}
+		</if>
+		<if test="uploadFile.md5!=null and uploadFile.md5!=''">
+			and ft.md5=#{uploadFile.md5}
+		</if>
+		<if test="uploadFile.resourceName!=null and uploadFile.resourceName!=''">
+			and ft.resource_name like CONCAT('%',#{uploadFile.resourceName},'%')
+		</if>
+		<if test="uploadFile.createdBy!=null and uploadFile.createdBy!=''">
+			and ft.created_by=#{uploadFile.createdBy}
+		</if>
+		<if test="uploadFile.status!=null and uploadFile.status!=''">
+			and ft.status=#{uploadFile.status}
+		</if>
+		<if test="uploadFile.startTime!=null and uploadFile.startTime !=''">
+			AND ft.last_update_date <![CDATA[>=]]>str_to_date(#{uploadFile.startTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s')
+		</if>
+		<if test="uploadFile.endTime!=null and uploadFile.endTime !=''">
+			AND ft.last_update_date <![CDATA[<=]]>date_add(str_to_date(#{uploadFile.endTime,jdbcType=VARCHAR},'%Y-%m-%d
+			%H:%i:%s'),interval 1 day)
+		</if>
+	</select>
+
+	<insert id="addUploadFile" parameterType="com.huayu.irla.core.courseware.vo.FileUploadItemVO">
+		INSERT INTO irla_res_upload_file_t (
+		resource_name,
+		resource_type,
+		resource_path,
+		md5,
+		app_id,
+		created_by,
+		creation_date,
+		last_updated_by,
+		last_update_date,
+		description
+		)
+		VALUES
+		(
+		#{uploadFile.resourceName},
+		#{uploadFile.resourceType},
+		#{uploadFile.resourcePath},
+		#{uploadFile.md5},
+		#{uploadFile.appId},
+		#{uploadFile.createdBy},
+		sysdate(),
+		#{uploadFile.lastUpdatedBy},
+		sysdate(),
+		#{uploadFile.description}
+		)
+	</insert>
+
+	<update id="updateUploadFile" parameterType="com.huayu.irla.core.courseware.vo.FileUploadItemVO">
+		update irla_res_upload_file_t ft
+		set
+		<if test="uploadFile.status !=null  and uploadFile.status !=''">
+			ft.status = #{uploadFile.status},
+		</if>
+		ft.last_update_date = sysdate()
+		where (1=1)
+		<if test="uploadFile.id !=null and uploadFile.id !=''">
+			and ft.id=#{uploadFile.id}
+		</if>
+		<if test="uploadFile.md5 !=null and uploadFile.md5 !=''">
+			and ft.md5=#{uploadFile.md5}
+		</if>
+	</update>
+
+	<delete id="deleteUploadFile" parameterType="com.huayu.irla.core.courseware.vo.FileUploadItemVO">
+		delete ft from irla_res_upload_file_t ft
+		where ft.id=#{uploadFile.id}
+	</delete>
+
+	<select id="getUploadFileRelation" resultType="com.huayu.irla.core.courseware.vo.FileUploadFileRelationVO" parameterType="java.lang.Long">
+		select
+		frt.id,
+		frt.upload_file_id uploadFileId,
+		frt.is_public isPublic,
+		frt.course_code courseCode,
+		frt.screenshot_pos screenshotPos,
+		frt.resource_owner resourceOwner,
+		frt.enabled,
+		frt.created_by createdBy,
+		frt.creation_date creationDate,
+		frt.last_updated_by lastUpdatedBy,
+		frt.last_update_date lastUpdateDate,
+		frt.description
+		from irla_res_upload_file_relation_t frt
+		where frt.upload_file_id= #{uploadFileId}
+	</select>
+
+	<select id="getUploadFileById" resultType="com.huayu.irla.core.courseware.vo.FileUploadItemVO" parameterType="java.lang.Long">
+		select
+		frt.id,
+		frt.upload_file_id uploadFileId,
+		frt.is_public isPublic,
+		frt.screenshot_pos screenshotPos,
+		frt.resource_owner resourceOwner,
+		frt.description,
+		rut.md5,
+		rut.resource_type resourceType,
+		rut.resource_path resourcePath,
+		rut.resource_name resourceName,
+		frt.course_code courseCode
+		from irla_res_upload_file_t rut, irla_res_upload_file_relation_t frt
+		where rut.id = frt.upload_file_id
+		and rut.id = #{id}
+	</select>
+
+
+	<insert id="insertUploadFileRelation" parameterType="com.huayu.irla.core.courseware.vo.FileUploadFileRelationVO">
+		insert into irla_res_upload_file_relation_t(
+		upload_file_id,
+		course_code,
+		is_public,
+		<if test="uploadFileRel.screenshotPos!=null and uploadFileRel.screenshotPos!=''">
+		screenshot_pos,
+		</if>
+		resource_owner,
+		created_by,
+		creation_date,
+		last_updated_by,
+		last_update_date,
+		description
+		) values(
+		#{uploadFileRel.uploadFileId},
+		#{uploadFileRel.courseCode},
+		#{uploadFileRel.isPublic},
+		<if test="uploadFileRel.screenshotPos!=null and uploadFileRel.screenshotPos!=''">
+			#{uploadFileRel.screenshotPos},
+		</if>
+		#{uploadFileRel.resourceOwner},
+		#{uploadFileRel.createdBy},
+		sysdate(),
+		#{uploadFileRel.lastUpdatedBy},
+		sysdate(),
+		#{uploadFileRel.description}
+		)
+	</insert>
+
+	<insert id="dittoUploadFileRelation" parameterType="com.huayu.irla.core.courseware.vo.FileUploadFileRelationVO">
+		INSERT INTO irla_res_upload_file_relation_t (
+		upload_file_id,
+		course_code,
+		is_public,
+		<if test="uploadFileRel.screenshotPos!=null and uploadFileRel.screenshotPos!=''">
+			screenshot_pos,
+		</if>
+		resource_owner,
+		description,
+		created_by,
+		creation_date,
+		last_updated_by,
+		last_update_date
+		) SELECT
+		#{uploadFileRel.uploadFileId},
+		rt.course_code,
+		rt.is_public,
+		<if test="uploadFileRel.screenshotPos!=null and uploadFileRel.screenshotPos!=''">
+			rt.screenshot_pos,
+		</if>
+		rt.resource_owner,
+		rt.description,
+		#{uploadFileRel.createdBy},
+		sysdate(),
+		#{uploadFileRel.lastUpdatedBy},
+		sysdate()
+		FROM
+		irla_res_upload_file_relation_t rt
+		WHERE
+		rt.upload_file_id = #{uploadFileRel.otherUploadFileId}
+	</insert>
+
+	<insert id="updateUploadFileRelationById" parameterType="com.huayu.irla.core.courseware.vo.FileUploadFileRelationVO">
+		update irla_res_upload_file_relation_t uft
+		set
+		uft.course_code=#{uploadFileRel.courseCode},
+		uft.is_public = #{uploadFileRel.isPublic},
+		<if test="uploadFileRel.screenshotPos!=null and uploadFileRel.screenshotPos!=''">
+			uft.screenshot_pos = #{uploadFileRel.screenshotPos},
+		</if>
+		<if test="uploadFileRel.screenshotPos==null or uploadFileRel.screenshotPos==''">
+			uft.screenshot_pos = 1,
+		</if>
+		uft.resource_owner = #{uploadFileRel.resourceOwner},
+		uft.last_updated_by = #{uploadFileRel.lastUpdatedBy},
+		uft.last_update_date = sysdate(),
+		uft.description = #{uploadFileRel.description}
+		where uft.upload_file_id = #{uploadFileRel.uploadFileId}
+	</insert>
+
+	<delete id="deleteUploadFileRelation" parameterType="java.lang.Long">
+		delete frt from irla_res_upload_file_relation_t frt where frt.upload_file_id = #{fileId}
+	</delete>
+
+	<insert id="insertFormualRes" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		insert into irla_resource_t(
+		    resource_id,
+			resource_code,
+			course_code,
+			resource_name,
+			resource_type,
+			resource_size,
+			resource_length,
+			resource_owner,
+			is_public,
+			attachment_name,
+			img_name,
+			created_by,
+			creation_date,
+			last_updated_by,
+			last_update_date,
+			is_valid,
+			description
+		) values(
+		    #{courseObj.resourceId},
+			#{courseObj.resourceCode},
+			#{courseObj.courseCode},
+			#{courseObj.resourceName},
+			#{courseObj.resourceType},
+			#{courseObj.resourceSize},
+			#{courseObj.resourceLength},
+			#{courseObj.resourceOwner},
+			#{courseObj.isPublic},
+			#{courseObj.attachmentName},
+			#{courseObj.imgName},
+			#{courseObj.createdBy},
+			sysdate(),
+			#{courseObj.lastUpdatedBy},
+			IFNULL(#{courseObj.lastUpdateDate},sysdate()),
+			#{courseObj.isValid},
+			#{courseObj.description}
+		)
+	</insert>
+
+	<update id="updateFormualRes" parameterType="com.huayu.irla.core.courseware.vo.CoursewareVO">
+		update irla_resource_t tct set
+		<if test="courseObj.attachmentName!=null and courseObj.attachmentName!=''">
+			tct.attachment_name= #{courseObj.attachmentName},
+		</if>
+		<if test="courseObj.imgName!=null and courseObj.imgName!=''">
+			tct.img_name = #{courseObj.imgName},
+		</if>
+		tct.last_update_date=sysdate()
+		where tct.resource_code = #{courseObj.resourceCode}
+	</update>
+	<!-- upload file operate end -->
+</mapper>  

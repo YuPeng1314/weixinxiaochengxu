@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>轮播图</title>
+<script src="/ietlAdmin/js/carousel/carousel.js"></script>
+</head>
+<body>
+	<form id="searchFrom"  class="form-horizontal" role="form"	>
+		<div class="form-group">
+			<label class="col-sm-2" style="width: auto; margin-top: 6px" for="homepage_title">图片标题</label>
+			<div class="col-sm-2">
+		    	<input type="text" name="carouselTitle" id="homepage_title_search"  class="form-control"  placeholder="请输入...." >
+			</div> 
+			<div class="col-sm-4"> 
+			    <input type="button" class="btn btn-primary " id = "search" onclick="homePage.searchBtn()" value = "查询"/>
+			    <input type="button" class="btn btn-primary " id = "rest" onclick="homePage.restBtn()" value = "清空"/>
+			    <input class="btn btn-primary" type="button" id = "addImg" onclick="homePage.addhomePageImg()" value="添加" />
+			</div>
+		</div>
+		<input type="text" value="解决bootstrap与AJAX异步提交表单的冲突" hidden />
+	</form>
+			
+	<table id="homepage_table"></table>
+		
+	<div id="addhomePage" class="modal fade" data-backdrop="static" role="dialog">
+		<div class="modal-dialog" style="width: 1000px; height: 1000px">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">×</button>
+					<h4 class="modal-title">图片维护</h4>
+				</div>
+				<div class="modal-body">
+					<form  class="form-horizontal" role="form" id="addpageForm">
+						<input id= "id" name="id" type="text" style ="display: none">
+						<input id= "carouselImgUrl" name="carouselImgUrl" type="text" style ="display: none">
+						<div class="form-group" id="carouseltitle">
+							<label class="col-sm-2 control-label" for="name">图片标题</label>
+							<div class="col-sm-4">
+								<input class="form-control" id="carouselTitle" type="text" name="carouselTitle" placeholder="图片标题将自动生成..." readonly="readonly">
+						    </div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="name">课程编码</font></label>
+							<div class="col-sm-4">
+								<input class="form-control" id="carouselLinkCode" type="text" name="carouselLinkCode" placeholder="请输入课程编码...">
+							</div>
+						</div>
+						<div class="form-group" id="carouseladdress">
+							<label class="col-sm-2 control-label" for="name">图片地址<font color="red">&ensp;*</font></label>
+							<div class="col-sm-6">
+								<div  id="homepageshow">
+									<div id="levdiv" class="file-input">   
+										<div class="file-preview">
+								    		<div class="close fileinput-remove"><span id="deldivpagex" >×</span></div>
+								    		<div class="file-drop-disabled">
+								    			<div  class="file-preview-thumbnails">
+												    <div class="file-live-thumbs">
+														<div class="file-preview-frame" id="preview-1477465486115-0" data-fileindex="0" data-template="image">
+															<div class="kv-file-content">
+																<img  id="testimgname" src="" class="kv-preview-data file-preview-image"style="width:auto;height:160px;">
+															</div>
+															<div class="file-thumbnail-footer">
+													     		<div class="file-actions">
+													      			<div class="file-footer-buttons">
+													          			<button type="button" class="kv-file-zoom btn btn-xs btn-default" title="查看详情"><i class="glyphicon glyphicon-zoom-in"></i></button>    
+													      			</div>
+													    			<div class="file-upload-indicator" title="没有上传"><i class="glyphicon glyphicon-hand-down text-warning"></i></div>
+													    			<div class="clearfix"></div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="clearfix"></div>    
+												<div class="file-preview-status text-center text-success"></div>
+												<div class="kv-fileinput-error file-error-message" style="display: none;"></div>
+								    		</div>
+										</div>
+										<div class="kv-upload-progress hide">
+											<div class="progress">
+								    			<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%;">
+								        			0%
+								        		</div>
+											</div>
+										</div>
+										<div class="input-group file-caption-main">
+											<div tabindex="500" class="form-control file-caption  kv-fileinput-caption">
+										   		<div id="imgaddpage" class="file-caption-name" title=""></div>
+											</div>
+										   	<div class="input-group-btn">
+										       <button type="button" tabindex="500" title="清除选中文件" class="btn btn-default fileinput-remove fileinput-remove-button"><span id="deldivpage" class="hidden-xs"><i class="glyphicon glyphicon-trash"></i>  移除</span></button>
+										       <button type="button" tabindex="500" title="取消进行中的上传" class="btn btn-default hide fileinput-cancel fileinput-cancel-button"><i class="glyphicon glyphicon-ban-circle"></i>  <span class="hidden-xs">取消</span></button>				
+											</div>
+										</div>
+									</div>
+									<div id='fileshow'><input id='homeimg_upload' name='files' type='file'   class='file-loading'></div>
+								</div>
+							</div>
+							<div >
+								<label class="col-sm-4 control-label"><font color="red">("仅支持jpg, gif,png格式")</font></label>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button id="uploadSubmit" type="button" class="btn btn-primary" onclick="homePage.uploadSub()">确定</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

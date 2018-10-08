@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.manage.dao.courseManage.ICourseManageDao">
+	<select id="findCourse" parameterType="courseVO" resultType="courseVO">
+		SELECT
+		  cat.category_name  AS catalogName,
+		  cat.category_code  AS catalogCode,
+		  ca.category_name   AS categoryName,
+		  c.id,
+		  c.course_code,
+		  c.category_code,
+		  c.course_name,
+		  c.course_img,
+		  c.is_valid         AS isValid,
+		  c.created_by       AS createdBy,
+		  c.creation_date    AS creationDate,
+		  c.last_updated_by  AS lastUpdatedBy,
+		  c.last_update_date AS lastUpdateDate,
+		  c.description      AS description,
+		  c.sequence_number
+		FROM irla_courseware_t c
+		  INNER JOIN irla_category_t ca
+		    ON c.category_code = ca.category_code
+		  INNER JOIN irla_category_t cat
+		    ON cat.category_code = ca.parent_category_code
+		<if test="course.id != null">
+			AND c.id = #{course.id}
+		</if>
+		<if test="course.course_code != null and course.course_code != ''">
+			AND c.course_code = #{course.course_code}
+		</if>
+		<if test="course.category_code != null and course.category_code != ''">
+			AND c.category_code = #{course.category_code}
+		</if>
+		<if test="course.course_name != null and course.course_name != ''">
+			AND c.course_name like CONCAT('%', #{course.course_name},'%')
+		</if>
+		<if test="course.course_img != null and course.course_img != ''">
+			AND c.course_img = #{course.course_img}
+		</if>
+		<if test="course.isValid != null and course.isValid != ''">
+			AND c.is_valid = #{course.isValid}
+		</if>
+		<if test="course.sequence_number != null ">
+			AND c.sequence_number = #{course.sequence_number}
+		</if>
+		ORDER BY
+			c.course_code ASC, c.last_update_date DESC
+		<if test="course.offset != null and course.limit != null">
+			LIMIT #{course.offset,jdbcType=INTEGER},#{course.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="getCourseCount" parameterType="courseVO" resultType="Integer">
+		SELECT
+		  COUNT(1)
+		FROM irla_courseware_t
+		<where>
+			<if test="course.id != null">
+				OR id = #{course.id}
+			</if>
+			<if test="course.category_code != null and course.category_code != ''">
+				OR category_code = #{course.category_code}
+			</if>
+			<if test="course.course_name != null and course.course_name != ''">
+				OR course_name like CONCAT('%', #{course.course_name},'%')
+			</if>
+			<if test="course.isValid != null and course.isValid != ''">
+				OR is_valid = #{course.isValid}
+			</if>
+		</where>
+	</select>
+	<insert id="addCourse" parameterType="courseVO">
+		INSERT INTO irla_courseware_t
+		            (course_code,
+		             category_code,
+		             course_name,
+		             course_img,
+		             is_valid,
+		             created_by,
+		             creation_date,
+		             last_updated_by,
+		             last_update_date,
+		             description,
+		             sequence_number)
+		VALUES	((concat('C', cast(nextval('course_code') as char))),
+				#{course.category_code},
+				#{course.course_name},
+				#{course.course_img},
+				'0',
+				#{course.createdBy},
+				SYSDATE(),
+				#{course.lastUpdatedBy},
+				SYSDATE(),
+				#{course.description},
+				#{course.sequence_number})
+	</insert>
+	<update id="updateCourse" parameterType="courseVO">
+		UPDATE irla_courseware_t
+		SET category_code = #{course.category_code},
+		<if test="course.course_img != null and course.course_img != ''">
+			course_img = #{course.course_img},
+		</if>
+		  course_name = #{course.course_name},
+		 <if test="course.isValid != null and course.isValid != ''">
+			is_valid = #{course.isValid},
+		</if>
+		  last_updated_by = #{course.lastUpdatedBy},
+		  last_update_date = SYSDATE(),
+		  description = #{course.description},
+		  sequence_number = #{course.sequence_number}
+		 WHERE 1=2
+		 <if test="course.id != null">
+			OR id = #{course.id}
+		</if>
+		<if test="course.course_code != null and course.course_code != ''">
+			OR course_code = #{course.course_code}
+		</if>
+	</update>
+	<delete id="deleteCourse" parameterType="Integer">
+		DELETE
+		FROM irla_courseware_t
+		WHERE id = #{course.id}
+	</delete>
+</mapper>

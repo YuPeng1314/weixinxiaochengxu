@@ -1,0 +1,100 @@
+html,body{ margin:0; padding:0; width:100%; height:100%;background-color:#f1f2f3;}
+ul,li{ list-style:none; margin:0; padding:0;}
+.clearfix{ clear:both;}
+
+.login-box{height:500px; width:900px; margin-left: auto;
+	margin-right: auto;}
+.login-left{ width: 350px;background-color: rgba(217,227,232,.5); float: left; height:450px; border-right: 1px solid #cccccc; text-align: center;background-image: url(../img/login_left.png);}
+.login-right{ float: left;  width: 500px; height:450px;}
+
+.bg-boxajx{
+	display:none;
+	left:50%;
+	top:50%;
+	width:100%;
+	height:100%;
+	margin:-250px 0px 0px -200px;
+	position:absolute;
+	background-image:null;
+}
+		
+.bg-box{
+	background-image: url(../img/bg-img.png);
+	background-repeat: no-repeat;
+	height:100%;
+	width:100%;
+	margin: 0 auto;
+}
+
+
+.tm-cen{
+	background-color: rgba(255,255,255,.5);
+	width: 500px;
+	height: 450px;
+	/* margin-left: auto;
+	margin-right: auto; */
+	
+}
+.img_cen{
+	margin-top: 20px;
+	margin-left: 150px;
+}
+.tm-cen li{
+	width: 280px;
+	margin: 0 auto;
+	text-align: center;
+}
+.tm-cen input{
+	width: 260px;
+	height: 40px;
+	line-height: 30px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	text-indent:30px;
+}
+.user,.password{
+	position: relative;
+}
+.user i,.password i{
+	background-image:url(../img/img-icon03.png);
+	background-repeat: no-repeat;
+	position: absolute;
+	left: 15px;
+	top: 18px;
+}
+
+.ewm img{width:63px;
+			}
+.ewm{  padding-left:122px;}
+.update{padding-left:85px;}	
+
+.user i{
+	height:19px;width:15px;background-position:-161px -89px;
+}
+.password i{
+	height:19px;width:15px;background-position:-93px -51px;
+}
+.remember-forget .left,.remember-forget .right{
+	display: inline-block;
+	line-height: 22px;
+}
+.remember-forget .left{
+	float: left;
+}
+.remember-forget .right{
+	float: right;
+	color: #fc9e18;
+	margin-top: 8px;
+}
+.remember-forget a{ text-decoration: none; line-height: 25px;}
+.login input{
+	width: 280px;
+	line-height: 30px;
+	border: none;
+	background-color: black;
+	margin-top: 20px;
+	font-size: 16px;
+	color: white;
+}
+.errorArea{line-height:30px; color:#e60012; height:30px;}			
+		

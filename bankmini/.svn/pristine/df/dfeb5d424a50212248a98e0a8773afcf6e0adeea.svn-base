@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.huayu.irla</groupId>
+		<artifactId>com.huayu.irla</artifactId>
+		<version>1.0</version>
+	</parent>
+	<artifactId>huayu.privilege.manage</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.huayu.irla</groupId>
+			<artifactId>irla.core.util</artifactId>
+			<version>1.0</version>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>central</id>
+			<name>Maven Repository Switchboard</name>
+			<url>http://central.maven.org/maven2/</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>central</id>
+			<name>Maven Plugin Repository</name>
+			<url>http://central.maven.org/maven2/</url>
+		</pluginRepository>
+	</pluginRepositories>
+</project>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.catalog.ICatalogCoreDao">
+
+
+	<select id="getAllCatalog" parameterType="com.huayu.irla.core.catalog.vo.CatalogVO"
+		resultType="com.huayu.irla.core.catalog.vo.CatalogVO" useCache="true">
+			 SELECT
+				ut.id as id,
+				ut.category_code as catalogCode,
+				ut.category_name as catalogName,
+				ut.parent_category_code as parentCatalogCode,
+				ut.category_level as catalogLevel
+				FROM irla_category_t ut
+			  where ut.is_valid = '1'
+			  UNION ALL
+			   SELECT 
+			      rst.id as id,
+			      rst.course_code as catalogCode,
+			      rst.course_name as catalogName,
+			      rst.category_code as parentCatalogCode,
+			      3 as catalogLevel
+			   FROM 
+			     irla_courseware_t rst
+	</select>
+</mapper>

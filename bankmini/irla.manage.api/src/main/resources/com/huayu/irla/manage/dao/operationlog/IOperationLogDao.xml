@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.manage.dao.operationlog.IOperationLogDao">
+	<select id="findlogList" parameterType="operationLogVO" resultType="operationLogVO">
+		 SELECT
+		  LOG_ID as log_id,
+          OPERATION_PARAM as operation_param,
+          OPERATION_MODULE as operation_module,
+          OPEARTION_USER as opeartion_user,
+          OPEARTION_TIME as opeartion_time,
+          OPEARTION_METHOD as opeartion_method ,
+          OPERATION_IP as   operation_ip,
+          OPERATION_ERR as operation_err,
+          OPERATION_FLAG as operation_flag
+		FROM                     
+		sys_operation_log_t
+		WHERE
+		1 = 1
+	 	 <if test="operationLog.opeartion_time!=null">
+			and opeartion_time &gt;=DATE_FORMAT(#{operationLog.opeartion_time},'%Y-%m-%d') 
+		</if>
+		   <if test="operationLog.opeartion_etime!=null">
+			and opeartion_time  &lt;= DATE_FORMAT(#{operationLog.opeartion_etime},'%Y-%m-%d') 
+		</if> 
+		<if test="operationLog.operation_flag!=null and operationLog.operation_flag!=''">
+		 	and OPERATION_FLAG = #{operationLog.operation_flag} 
+		</if>
+		ORDER BY 
+			log_id DESC
+		<if test="operationLog.offset!=null and operationLog.limit !=null">
+			LIMIT #{operationLog.offset,jdbcType=INTEGER},#{operationLog.limit,jdbcType=INTEGER}
+		</if> 
+	</select>
+	
+	<select id="getCount" resultType="int" parameterType="operationLogVO">
+		select count(1) from sys_operation_log_t 
+		WHERE
+		1 = 1
+		 <if test="operationLog.opeartion_time!=null">
+			and opeartion_time &gt;=DATE_FORMAT(#{operationLog.opeartion_time},'%Y-%m-%d') 
+		</if>
+		   <if test="operationLog.opeartion_etime!=null">
+			and opeartion_time  &lt;= DATE_FORMAT(#{operationLog.opeartion_etime},'%Y-%m-%d') 
+		</if> 
+			<if test="operationLog.operation_flag!=null and operationLog.operation_flag!=''">
+		 	and OPERATION_FLAG = #{operationLog.operation_flag} 
+		</if>
+	</select>
+	
+	<insert id="addOperaLog" parameterType="operationLogVO">
+		INSERT INTO sys_operation_log_t
+		(
+		OPERATION_PARAM ,
+		OPERATION_MODULE ,
+		OPEARTION_USER ,
+		OPEARTION_TIME ,
+		OPEARTION_METHOD ,                             
+		OPERATION_IP     ,
+		OPERATION_ERR   ,
+		OPERATION_FLAG                          
+		)
+		VALUES
+		(
+		#{operation_param},
+		#{operation_module},
+		#{opeartion_user},
+		SYSDATE(),
+		#{opeartion_method},
+		#{operation_ip},
+		#{operation_err},
+		#{operation_flag}
+		)
+	</insert>
+	
+	
+	<!-- 登录日志的查询 -->
+	<select id="findLoginList" parameterType="sysLoginoutVO" resultType="sysLoginoutVO">
+		 SELECT
+		    id        as   id,
+          user_code as userCode,
+          user_ip as userIP,
+          type as type,
+          action_date as actionDate,
+          area as eara   
+		FROM                     
+		sys_user_loginout_log_t
+		WHERE
+		1 = 1
+		<if test="loginVO.userCode!=null and loginVO.userCode!=''">
+			and user_code like  CONCAT('%',#{loginVO.userCode},'%')
+		</if>
+		<if test="loginVO.userIP!=null and loginVO.userIP!=''">
+		 	and user_ip like  CONCAT('%',#{loginVO.userIP},'%')
+		</if>
+		<if test="loginVO.type!=null and loginVO.type!=''">
+		 	and type = #{loginVO.type} 
+		</if>
+		ORDER BY 
+			id DESC
+		<if test="loginVO.offset!=null and loginVO.limit !=null">
+			LIMIT #{loginVO.offset,jdbcType=INTEGER},#{loginVO.limit,jdbcType=INTEGER}
+		</if> 
+	</select>
+	
+	<select id="getLoginCount" resultType="int" parameterType="sysLoginoutVO">
+		select count(1) from sys_user_loginout_log_t 
+		WHERE
+		1 = 1
+			<if test="loginVO.userCode!=null and loginVO.userCode!=''">
+			and user_code like  CONCAT('%',#{loginVO.userCode},'%')
+		</if>
+		<if test="loginVO.userIP!=null and loginVO.userIP!=''">
+		 	and user_ip like  CONCAT('%',#{loginVO.userIP},'%')
+		</if>
+		<if test="loginVO.type!=null and loginVO.type!=''">
+		 	and type = #{loginVO.type} 
+		</if>
+	</select>
+
+</mapper>  

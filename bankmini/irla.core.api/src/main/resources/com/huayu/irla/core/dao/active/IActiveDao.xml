@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.active.IActiveDao">
+	<select id="getActiveList" parameterType="com.huayu.irla.core.active.vo.ActiveVO" resultType="com.huayu.irla.core.active.vo.ActiveVO">
+		SELECT
+		  a.id               AS id,
+		  a.active_code      AS activeCode,
+		  a.active_name      AS activeName,
+		  a.content          AS content,
+		  a.active_img       AS activeImg,
+		  a.kinds            AS kinds,
+		  a.is_valid         AS isValid,
+		  a.is_hot			 AS isHot,
+		  a.description      AS description,
+		  a.created_by       AS createdBy,
+		  a.creation_date    AS creationDate,
+		  a.last_updated_by  AS lastUpdatedBy,
+		  a.last_update_date AS lastUpdateDate
+		FROM irla_active_t a
+		WHERE 1 = 1
+		<if test="active.id != null and active.id != ''">
+		    AND a.id = #{active.id}
+		</if>
+		<if test="active.activeName != null and active.activeName != ''">
+		 	AND a.active_name like  CONCAT('%',#{active.activeName},'%')
+		</if>
+		<if test="active.isValid != null and active.isValid != ''">
+		    AND a.is_valid = #{active.isValid}
+		</if>
+		<if test="active.isHot != null and active.isHot != ''">
+		    AND is_hot = #{active.isHot}
+		</if>
+		<if test="active.kinds != null and active.kinds != ''">
+		    AND a.kinds = #{active.kinds}
+		</if>
+		<if test="active.activeCode != null and active.activeCode != ''">
+		    AND a.active_code = #{active.activeCode}
+		</if>
+		ORDER BY a.last_update_date DESC
+	</select>
+	
+	<select id="getActiveCount" parameterType="com.huayu.irla.core.active.vo.ActiveVO" resultType="int">
+		SELECT
+		  COUNT(1)
+		FROM irla_active_t
+		WHERE 1 = 1
+		<if test="active.id != null and active.id != ''">
+		    AND id = #{active.id}
+		</if>
+		<if test="active.activeName != null and active.activeName != ''">
+		 	AND active_name like  CONCAT('%',#{active.activeName},'%')
+		</if>
+		<if test="active.isValid != null and active.isValid != ''">
+		    AND is_valid = #{active.isValid}
+		</if>
+		<if test="active.isHot != null and active.isHot != ''">
+		    AND is_hot = #{active.isHot}
+		</if>
+		<if test="active.kinds != null and active.kinds != ''">
+		    AND kinds = #{active.kinds}
+		</if>
+		<if test="active.activeCode != null and active.activeCode != ''">
+		    AND active_code = #{active.activeCode}
+		</if>
+		<if test="active.offset!=null and active.limit !=null">
+			LIMIT
+			#{active.offset,jdbcType=INTEGER},#{active.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<insert id="addActive" parameterType="com.huayu.irla.core.active.vo.ActiveVO">
+		INSERT INTO irla_active_t
+		            (active_code,
+		             active_name,
+		             content,
+		             active_img,
+		             kinds,
+		             is_valid,
+		             is_hot,
+		             description,
+		             created_by,
+		             creation_date,
+		             last_updated_by,
+		             last_update_date)
+		VALUES ((CONCAT('A', CAST(nextval('active_code')AS CHAR))),
+		        #{active.activeName},
+		        #{active.content},
+		        #{active.activeImg},
+		        #{active.kinds},
+		        1,
+		        #{active.isHot},
+		        #{active.description},
+		        #{active.createdBy},
+		        SYSDATE(),
+		        #{active.lastUpdatedBy},
+		        SYSDATE())
+	</insert>
+	
+	<update id="updateActive" parameterType="com.huayu.irla.core.active.vo.ActiveVO">
+		UPDATE irla_active_t
+		SET <if test="active.activeName != null and active.activeName != ''">
+			active_name = #{active.activeName},
+		</if>
+		<if test="active.content != null and active.content != ''">
+		  content = #{active.content},
+		</if>
+		<if test="active.activeImg != null and active.activeImg != ''">
+		  active_img = #{active.activeImg},
+		</if>
+		<if test="active.kinds != null and active.kinds != ''">
+		  kinds = #{active.kinds},
+		</if>
+		<if test="active.isValid != null and active.isValid != ''">
+		  is_valid = #{active.isValid},
+		</if>
+		<if test="active.isHot != null and active.isHot != ''">
+		  is_hot = #{active.isHot},
+		</if>
+		<if test="active.description != null and active.description != ''">
+		  description = #{active.description},
+		</if>
+		<if test="active.lastUpdatedBy != null and active.lastUpdatedBy != ''">
+		  last_updated_by = #{active.lastUpdatedBy},
+		</if>
+		  last_update_date = SYSDATE()
+		WHERE 1=2
+		<if test="active.activeCode != null and active.activeCode != ''">
+			OR active_code = #{active.activeCode}
+		</if>
+		<if test="active.id != null and active.id != ''">
+			OR id = #{active.id}
+		</if>
+	</update>
+	
+	<delete id="deleteActive" parameterType="int">
+		DELETE
+		FROM irla_active_t
+		WHERE id = #{id}
+	</delete>
+</mapper>

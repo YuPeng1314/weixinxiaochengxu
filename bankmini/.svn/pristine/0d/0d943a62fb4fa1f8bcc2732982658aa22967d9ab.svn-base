@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.huayu.irla</groupId>
+		<artifactId>com.huayu.irla</artifactId>
+		<version>1.0</version>
+	</parent>
+	<artifactId>irla.manage.web</artifactId>
+	<packaging>war</packaging>
+
+	<properties>
+		<moudle.version>1.0</moudle.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.huayu.irla</groupId>
+			<artifactId>irla.manage.api</artifactId>
+			<version>${moudle.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.huayu.irla</groupId>
+			<artifactId>irla.manage.impl</artifactId>
+			<version>${moudle.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.huayu.irla</groupId>
+			<artifactId>irla.core.api</artifactId>
+			<version>${moudle.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.huayu.irla</groupId>
+			<artifactId>irla.core.impl</artifactId>
+			<version>${moudle.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.huayu.irla</groupId>
+			<artifactId>irla.core.util</artifactId>
+			<version>${moudle.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.huayu.irla</groupId>
+			<artifactId>huayu.privilege.manage</artifactId>
+			<version>${moudle.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+		</dependency>
+
+
+	</dependencies>   
+
+	<!-- <build>
+		<finalName>manage.web</finalName>
+	</build> -->
+
+</project>

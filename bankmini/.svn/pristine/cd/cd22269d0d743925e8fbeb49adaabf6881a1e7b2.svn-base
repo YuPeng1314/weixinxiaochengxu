@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huayu.irla.privilege.manage.dao.IMiniProgramUserInfoDao">  
+
+	<select id="getMiniProgramUserInfo"  resultType="com.huayu.irla.privilege.manage.vo.MiniProUserInfoVO" parameterType="com.huayu.irla.privilege.manage.vo.MiniProUserInfoVO">  
+		SELECT
+			urt.id,
+			urt.user_code openid,
+			urt.user_name userNick,
+			urt.phone,
+			urt.session_key sessionKey,
+			urt.sex gender,
+			urt.unionid,
+			urt.language
+		FROM
+			sys_userinfo_t urt
+		WHERE (1=2)
+		<if test="userinfo.openid!=null and userinfo.openid!=''">
+			or urt.user_code = #{userinfo.openid}
+		</if>
+	</select>  
+
+	<update id="updateMiniProgramUserInfo" parameterType="com.huayu.irla.privilege.manage.vo.MiniProUserInfoVO">
+	     update sys_userinfo_t urt
+	     set
+	       urt.last_update_date=sysdate()
+	       <if test="userinfo.sessionKey!=null and userinfo.sessionKey!=''">
+	       	   ,urt.session_key = #{userinfo.sessionKey}
+	       </if>
+	       <if test="userinfo.userNick!=null and userinfo.userNick!=''">
+	       	   ,urt.user_name = #{userinfo.userNick}
+	       </if>
+	       <if test="userinfo.phone!=null and userinfo.phone!=''">
+	       	   ,urt.phone = #{userinfo.phone}
+	       </if>
+	       <if test="userinfo.gender!=null and userinfo.gender!=''">
+	       	   ,urt.sex = #{userinfo.gender}
+	       </if>
+	       <if test="userinfo.language!=null and userinfo.language!=''">
+	       	   ,urt.language = #{userinfo.language}
+	       </if>
+	       <if test="userinfo.unionid!=null and userinfo.unionid!=''">
+	       	   ,urt.unionid = #{userinfo.unionid}
+	       </if>
+	       
+	       WHERE (1=2)
+			<if test="userinfo.openid!=null and userinfo.openid!=''">
+				or urt.user_code = #{userinfo.openid}
+			</if>
+	</update>
+	
+	<insert id="addMiniProgramUserInfo" parameterType="com.huayu.irla.privilege.manage.vo.MiniProUserInfoVO">
+		insert into sys_userinfo_t(user_code, session_key, unionid, last_updated_by, last_update_date) values(
+			#{userinfo.openid}, #{userinfo.sessionKey}, #{userinfo.unionid}, 'irla-sys',sysdate()
+		)
+	</insert>
+</mapper>  

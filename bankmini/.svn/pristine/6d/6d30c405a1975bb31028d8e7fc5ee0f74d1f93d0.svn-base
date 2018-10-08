@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<modules>
+
+	<module name="部门管理">
+		<className>com.huayu.iral.manage.department.application.impl.DepartmentImpl</className>
+	</module>
+	
+	<module name="人员管理">
+		<className>com.huayu.iral.manage.role.application.impl.UserManageImpl</className>
+	</module>
+	
+	<module name="操作日志">
+		<className>com.huayu.iral.manage.operationlog.application.impl.OperationLogImpl</className>
+	</module>
+	
+	<module name="角色管理">
+		<className>com.huayu.iral.manage.roleManage.application.impl.RoleManageImpl</className>
+	</module>
+	
+	<module name="专业管理">
+		<className>com.huayu.iral.manage.profession.application.impl.ProfessionImpl</className>
+        <className>com.huayu.iral.manage.resourcedirec.application.impl.ResourceDirectoryImpl</className>
+	</module>
+	
+	<module name="专业及目录">
+		<className>com.huayu.iral.manage.commom.application.impl.FindProfessionDirecImpl</className>
+	</module>
+	
+	<module name="爬虫规则">
+		<className>com.huayu.iral.manage.ads.application.impl.AdRulesImpl</className>
+	</module>
+	
+	<module name="爬虫管理">
+		<className>com.huayu.iral.manage.ads.application.impl.CrawlersImpl</className>
+	</module> 
+	
+	<module name="新闻管理">
+		<className>com.huayu.iral.manage.ads.application.impl.AdsManagerImpl</className>
+	</module> 
+	
+	<module name="缓存管理">
+		<className>com.huayu.iral.manage.cache.application.impl.CacheManagerImpl</className>
+	</module> 
+	
+	<module name="数据字典">
+		<className>com.huayu.iral.manage.datadict.application.impl.DataDictImpl</className>
+	</module> 
+	
+	<module name="菜单管理">
+		<className>com.huayu.iral.manage.menu.application.impl.MenuImpl</className>
+	</module> 
+	
+	<module name="日志管理">
+		<className>com.huayu.iral.manage.log.application.impl.LogManageImpl</className>
+	</module> 
+	
+	<module name="资源维护及审批">
+		<className>com.huayu.iral.manage.direc.application.impl.ResourceImpl</className>
+	</module> 
+	
+	<module name="已发布资源删除">
+		<className>com.huayu.iral.manage.direcOfficial.application.impl.ResourceOfficialMImpl</className>
+	</module> 
+	
+	<module name="消息管理">
+		<className>com.huayu.iral.manage.message.application.impl.MessageImpl</className>
+	</module> 
+	
+	<module name="文件管理">
+		<className>com.huayu.iral.manage.homefile.application.impl.HomeFileImpl</className>
+	</module> 
+	
+	<module name="动态管理">
+		<className>com.huayu.iral.manage.homepage.application.impl.HomePageImpl</className>
+	</module> 
+	
+	<module name="留言管理">
+		<className>com.huayu.iral.manage.suggest.application.impl.SuggestImpl</className>
+	</module> 
+	
+	<module name="我的待办">
+		<className>com.huayu.iral.manage.passwordBacklog.application.impl.PasswordBacklogImpl</className>
+	</module> 
+	
+	<module name="试题章节及维护">
+		<className>com.huayu.iral.manage.exam.application.impl.ExamQuesImpl</className>
+	</module> 
+	
+	<module name="考试发布">
+		<className>com.huayu.iral.manage.exam.application.impl.ExamPaperImpl</className>
+	</module> 
+	
+	<module name="JMS日志">
+		<className>com.huayu.iral.manage.jmsResource.application.impl.JmsResourcesImpl</className>
+	</module> 
+
+</modules>

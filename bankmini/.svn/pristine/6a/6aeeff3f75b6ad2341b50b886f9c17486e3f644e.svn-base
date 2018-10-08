@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.huayu.irla.privilege.manage.dao.ISysUsersRepositoryDao">  
+    <resultMap id="sysUsers" type="com.huayu.irla.privilege.manage.vo.SysUsersVO"/>
+    <resultMap id="sysAuthorities" type="com.huayu.irla.privilege.manage.vo.SysAuthoritiesVO" />
+    <parameterMap id="sysUsers" type="com.huayu.irla.privilege.manage.vo.SysUsersVO"/>
+    <parameterMap id="sysAuthorities" type="com.huayu.irla.privilege.manage.vo.SysAuthoritiesVO" />
+    <resultMap id="sysPersistentLoginsVO" type="com.huayu.irla.privilege.manage.vo.SysPersistentLoginsVO" />
+    <parameterMap id="sysPersistentLoginsVO" type="com.huayu.irla.privilege.manage.vo.SysPersistentLoginsVO"/>
+	<resultMap id="sysRolesVO" type="com.huayu.irla.privilege.manage.vo.SysRolesVO" />
+    <parameterMap id="sysRolesVO" type="com.huayu.irla.privilege.manage.vo.SysRolesVO"/>
+	<resultMap id="sysLoginoutVO" type="com.huayu.irla.privilege.manage.vo.SysLoginoutVO" />
+    <parameterMap id="sysLoginoutVO" type="com.huayu.irla.privilege.manage.vo.SysLoginoutVO"/>
+	
+		
+	<select id="getByUsername" parameterType="java.lang.String" resultMap="sysUsers">  
+	      SELECT 
+	     	u.USER_ID userId, 
+	     	u.user_code username, 
+	     	u.PASSWORD password, 
+	     	u.DT_CREATE  dtCreate,
+			u.LAST_LOGIN lastLogin, 
+			u.DEADLINE deadline, 
+			u.LOGIN_IP loginIp,
+			u.V_QZJGID VQzjgid, 
+			u.V_QZJGMC VQzjqmc, 
+			u.DEP_ID depId, 
+			u.DEP_NAME depName,
+			u.is_valid enabled, 
+			u.ACCOUNT_NON_EXPIRED accountNonExpired,
+			u.ACCOUNT_NON_LOCKED accountNonLocked,
+			u.CREDENTIALS_NON_EXPIRED credentialsNonExpired,
+			uft.user_name name,
+			uft.sex sex,
+			uft.picture_links as picURL,
+			uft.department_Code as departmentCode,
+			uft.phone phone,
+			uft.plateform_code plateformCode,
+			(UNIX_TIMESTAMP(sysdate()) - UNIX_TIMESTAMP(u.LOCKED_TIME))/60 gapMiu,
+			u.pass_type passType
+		FROM 
+			SYS_USERS u 
+	    LEFT JOIN  sys_userinfo_t uft
+    		ON
+         u.USER_CODE = uft.user_code
+		WHERE 
+			u.USER_CODE = #{username}
+	</select>  
+	
+	<select id="getSysAuthoritiesByUsername"  resultMap="sysAuthorities" >	
+		select sa.AUTHORITY_ID authorityID, concat(sa.AUTHORITY_MARK,'+',sa.AUTHORITY_NAME) authorityMark, sa.AUTHORITY_NAME authorityName,
+			sa.AUTHORITY_DESC authorityDesc, sa.MESSAGE message, sa.ENABLE enable, sa.ISSYS isSys from SYS_AUTHORITIES sa where EXISTS (select 1 from SYS_ROLES_AUTHORITIES sra, 
+			SYS_ROLES sr, SYS_USERS suu, SYS_USERS_ROLES sur where suu.USER_ID = sur.USER_ID
+			and sur.ROLE_ID = sr.ROLE_ID and sra.ROLE_ID = sr.ROLE_ID and sa.AUTHORITY_ID = sra.AUTHORITY_ID and suu.USER_CODE=#{username})
+			
+			<if test="ausTypes!=null and ausTypes.length!=0">
+                AND sa.type in
+                <foreach collection="ausTypes" item="type"
+                    index="index" open="(" close=")" separator=",">
+                    #{type}
+                </foreach>
+            </if>    
+	</select>
+	
+	<insert id="createNewToken" parameterMap="sysPersistentLoginsVO">
+		insert into SYS_PERSISTENT_LOGINS(USER_CODE,SERIES,TOKEN,LAST_USED) VALUES(#{userCode},#{series},#{token},#{lastUsed,jdbcType=DATE})
+	</insert>
+	
+	<delete id="removeUserTokens" parameterType="java.lang.String">
+	    delete from SYS_PERSISTENT_LOGINS where USER_CODE=#{userName}
+	</delete>
+	
+	<update id="updateToken">
+	   update SYS_PERSISTENT_LOGINS set token=#{tokenValue, jdbcType=VARCHAR}, last_used=#{endDate,jdbcType=DATE} where series=#{series,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getTokenForSeries" parameterType="java.lang.String" resultMap="sysPersistentLoginsVO">
+	   select USER_CODE userCode,series ,token,last_used lastUsed from SYS_PERSISTENT_LOGINS where series = #{series}
+	</select>
+	
+	<update id="updatePassword"> 
+	   update sys_users ser set ser.`PASSWORD`=#{password, jdbcType=VARCHAR}
+	   		, ser.pass_type=#{passType, jdbcType=INTEGER}
+	     where ser.USER_CODE=#{userName, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getRoleInfo" resultMap="sysRolesVO" parameterType="java.lang.String"> 
+		SELECT
+			syr.ROLE_ID roleID,
+			syr.ROLE_NAME roleName,
+			syr.ROLE_DESC roleDesc,
+			syr.TYPE type
+		FROM
+			sys_roles syr,
+			sys_users uses,
+			sys_users_roles sur
+		WHERE
+			syr.ROLE_ID = sur.ROLE_ID
+		AND uses.USER_ID = sur.USER_ID
+		AND uses.USER_CODE = #{userName, jdbcType=VARCHAR}
+	</select>
+	
+	
+	<select id="getUnitAdminByCurUserDeptCode" resultMap="sysUsers" parameterType="java.lang.String">
+		SELECT
+	      sy_user.USER_ID userId,
+		  par_userinfo.user_code username, 
+		  par_userinfo.user_name name,
+		  par_userinfo.department_Code departmentCode
+		FROM
+			sys_userinfo_t par_userinfo,
+			sys_users sy_user
+		WHERE
+			par_userinfo.user_code = sy_user.USER_CODE
+		AND par_userinfo.department_Code = #{deptCode, jdbcType=VARCHAR}
+		AND EXISTS (
+			SELECT
+				1
+			FROM
+				sys_roles ro,
+				sys_users_roles user_role
+			WHERE
+				ro.role_id = user_role.role_id
+			AND sy_user.user_id = user_role.user_id
+		  and ro.type='3'
+		)
+	</select>
+	
+	
+	<insert id="recordLoginoutLog" parameterMap="sysLoginoutVO">
+		insert into sys_user_loginout_log_t(user_code,user_ip,type,action_date,area) values(#{userCode, jdbcType=VARCHAR},#{userIP, jdbcType=VARCHAR},#{type, jdbcType=VARCHAR},sysdate(),#{eara, jdbcType=VARCHAR})
+	</insert>
+	
+	<update id="recordOnlineUsers">
+		update sys_users_inline_t ti set ti.online_num=ti.online_num+1, ti.latest_date=sysdate() where ti.id=1
+	</update>
+	
+	<update id="updateOtherUserInfo" parameterMap="sysUsers">
+		update sys_users us set us.LOGIN_IP=#{loginIp, jdbcType=VARCHAR}, us.LAST_LOGIN=sysdate() where us.USER_CODE=#{username, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="recordOfflineUsers">
+		update sys_users_inline_t ti set ti.online_num=ti.online_num-1, ti.latest_date=sysdate() where ti.id=1
+	</update>
+	
+	<delete id="clearOnlineUsers">
+		update sys_users_inline_t ti set ti.online_num=0, ti.latest_date=sysdate() where ti.id=1
+	</delete>
+	
+	<select id="getOnlineUsers" resultType="java.lang.Integer">
+		select ti.online_num from sys_users_inline_t ti where ti.id=1
+	</select>
+	
+	<update id="updateUserLockedState">
+	    update sys_users sus set sus.LOCKED_TIME=sysdate(), sus.ACCOUNT_NON_LOCKED=#{isLocked, jdbcType=BOOLEAN} where user_code=#{userName, jdbcType=VARCHAR}
+	</update>
+</mapper>  

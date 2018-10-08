@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.course.ICourseDao">
+	<select id="getNewCourse" resultType="com.huayu.irla.core.course.vo.CourseVO">
+		SELECT
+		  ct.id,
+		  ct.course_code,
+		  ct.course_name,
+		  ct.category_code,
+		  ct.course_img,
+		  ct.created_by       AS createdBy,
+		  ct.creation_date    AS creationDate,
+		  ct.last_updated_by  AS lastUpdatedBy,
+		  ct.last_update_date AS lastUpdateDate,
+		  ct.description,
+		  ct.is_valid         AS isValid
+		FROM irla_courseware_t ct
+		WHERE ct.is_valid = '1'
+		ORDER BY 
+		ct.last_update_date DESC 
+		LIMIT 2
+	</select>
+</mapper>

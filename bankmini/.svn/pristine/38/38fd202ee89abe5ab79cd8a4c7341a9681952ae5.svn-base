@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.resource.IResourceDao">
+	<select id="getResourceSeq" resultType="java.lang.Long">
+	     SELECT nextval('sys_res_upload_seq') from dual
+	</select>
+	
+	<select id="getResourceID" resultType="java.lang.Long">
+	     SELECT nextval('resource_Id') from dual
+	</select>
+	
+	<select id="getJmsResources" resultType="java.lang.Long">
+	     SELECT nextval('jsm_resources_seq') from dual
+	</select>
+</mapper>  

@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.manage.dao.menu.IMenuDao">
+	<!--mybatis ehcache缓存配置 -->
+	<!-- 以下两个<cache>标签二选一,第一个可以输出日志,第二个不输出日志 -->
+	<!-- <cache type="org.mybatis.caches.ehcache.LoggingEhcache" />  -->
+
+	<select id="getMenuList" parameterType="com.huayu.irla.core.menu.vo.NodeMenuVO" resultType="com.huayu.irla.core.menu.vo.NodeMenuVO">
+		SELECT
+			mt.id           as id,
+			mt.menu_code    as mCode,
+			mt.parent_code  as mPid,
+			mt.menu_name    as mCname,
+			mt.url          as mUrl,
+			mt.icon         as mIcon,
+			mt.created_by      as createdBy,
+			mt.creation_date  as creationDate,
+			mt.last_updated_by     as lastUpdatedBy,
+			mt.last_update_date  as lastUpdateDate,
+			mt.is_valid        as isValid,
+			mt.resource_id  as resourceId,
+			mt.authority_name as authorityName,
+			mt.description       as description,
+			mt.is_blank as mBlank
+		FROM
+			sys_menu_directory_t mt
+		WHERE
+			1=1
+		<if test="menu.id!=null and menu.id !=''">
+			AND mt.id = #{menu.id}
+		</if>
+		<if test="menu.mCname!=null and menu.mCname !=''">
+			AND mt.menu_name like CONCAT('%', #{menu.mCname},'%')
+		</if>
+		<if test="menu.mPid!=null and menu.mPid !=-1">
+			AND mt.parent_code = #{menu.mPid,jdbcType=INTEGER}
+		</if>
+		ORDER BY
+			mt.menu_code desc
+		<if test="menu.offset!=null and menu.limit !=null">
+			LIMIT #{menu.offset,jdbcType=INTEGER},#{menu.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+
+	<select id="getCount" resultType="int" parameterType="com.huayu.irla.core.menu.vo.NodeMenuVO">
+		SELECT
+			count(1) as count
+		FROM
+			sys_menu_directory_t mt
+		WHERE
+		 1=1
+		 <if test="menu.id!=null and menu.id !=''">
+			AND mt.id = #{menu.id}
+		</if>
+		<if test="menu.mCname!=null and menu.mCname !=''">
+			AND mt.menu_name like CONCAT('%', #{menu.mCname},'%')
+		</if>
+		<if test="menu.mPid!=null and menu.mPid !=-1">
+			AND mt.parent_code = #{menu.mPid,jdbcType=INTEGER}
+		</if>
+			
+	</select>
+
+	<insert id="addMenu" parameterType="com.huayu.irla.core.menu.vo.NodeMenuVO">
+		insert into
+		sys_menu_directory_t(
+			menu_code,
+			parent_code,
+			menu_name,
+			url,
+			icon,
+			created_by,
+			creation_date,
+			last_updated_by,
+			last_update_date,
+			is_valid,
+			authority_name,
+			resource_id,
+			description
+			<if test="mBlank!=null and mBlank!=''">
+			,is_blank
+			</if>
+		)values(
+			cast(nextval('menu_code') as char),
+			#{mPid},
+			#{mCname},
+			#{mUrl},
+			#{mIcon},
+			#{createdBy},
+			SYSDATE(),
+			#{lastUpdatedBy},
+			SYSDATE(),
+			'1',
+			#{authorityName},
+			#{resourceId},
+			#{description}
+			<if test="mBlank!=null and mBlank!=''">
+			,#{mBlank}
+			</if>
+		)
+	</insert>
+
+	<update id="updateMenu" parameterType="com.huayu.irla.core.menu.vo.NodeMenuVO">
+		UPDATE
+			sys_menu_directory_t
+		SET
+			<!-- id =#{id},
+			menu_code =#{id}, -->
+			parent_code =#{mPid},
+			menu_name =#{mCname},
+			url =#{mUrl},
+			icon =#{mIcon},
+			last_updated_by =#{lastUpdatedBy},
+			last_update_date =SYSDATE(),
+			authority_name = #{authorityName},
+			is_valid = #{isValid},
+			resource_id = #{resourceId},
+			description =#{description}
+			<if test="mBlank!=null and mBlank!=''">
+			,is_blank = #{mBlank}
+			</if>
+			<if test="mBlank==null or mBlank==''">
+			,is_blank = '0'
+			</if>
+		WHERE
+			id = #{id}
+	</update>
+
+	<delete id="deleteMenu" parameterType="String">
+		DELETE FROM
+			sys_menu_directory_t
+		WHERE
+			id = #{id jdbcType=VARCHAR}
+	</delete>
+
+	<resultMap id="sysAuthoritiesVO" type="com.huayu.irla.privilege.manage.vo.SysAuthoritiesVO"/>
+   	<parameterMap id="sysAuthoritiesVO" type="com.huayu.irla.privilege.manage.vo.SysAuthoritiesVO"/>
+
+	<select id="findSysAuth" parameterMap="sysAuthoritiesVO" resultMap="sysAuthoritiesVO">
+		select
+			AUTHORITY_ID as authorityID,
+			AUTHORITY_MARK as authorityMark,
+			AUTHORITY_NAME as authorityName,
+			AUTHORITY_DESC as
+			authorityDesc,
+			MESSAGE as message,
+			ISSYS as isSys,
+			MODULE_ID as moduleID,
+			TYPE as type,
+			CREATED_BY as createdBy,
+			CREATION_DATE as creationDate,
+			LAST_UPDATED_BY as lastUpdatedBy,
+			LAST_UPDATE_DATE as lastUpdateDate,
+			ENABLE as enable
+		FROM
+			SYS_AUTHORITIES st
+		WHERE
+		1=1
+		<if test="sysAuth.authorityID!=null and sysAuth.authorityID!=''">
+			AND st.AUTHORITY_ID = #{sysAuth.authorityID}
+		</if>
+		<if test="sysAuth.authorityMark!=null and sysAuth.authorityMark!=''">
+			AND st.AUTHORITY_MARK = #{sysAuth.authorityMark}
+		</if>
+		<if test="sysAuth.authorityName!=null and sysAuth.authorityName!=''">
+			AND st.AUTHORITY_NAME = #{sysAuth.authorityName}
+		</if>
+		<if test="sysAuth.type!=null and sysAuth.type!=''">
+			AND st.TYPE = #{sysAuth.type}
+		</if>
+		<if test="sysAuth.message!=null and sysAuth.message!=''">
+			AND st.MESSAGE = #{sysAuth.message}
+		</if>
+		<if test="sysAuth.isSys!=null and sysAuth.isSys!=''">
+			AND st.ISSYS = #{sysAuth.isSys}
+		</if>
+		<if test="sysAuth.moduleID!=null and sysAuth.moduleID!=''">
+			AND st.MODULE_ID = #{sysAuth.moduleID}
+		</if>
+	</select>
+	
+	<resultMap id="sysResoucesVO" type="com.huayu.irla.core.privilege.vo.SysResoucesVO"/>
+   	<parameterMap id="sysResoucesVO" type="com.huayu.irla.core.privilege.vo.SysResoucesVO"/>
+	
+	<select id="findSysResource" parameterMap="sysResoucesVO" resultMap="sysResoucesVO">
+	select
+		RESOURCE_ID as resourceId ,
+		RESOURCE_TYPE as resourceType ,
+		RESOURCE_NAME as resourceName ,
+		RESOURCE_DESC as resourceDesc ,
+		RESOURCE_PATH as resourcePath ,
+		PRIORITY as priority ,
+		IS_VALID as isValid ,
+		ISSYS as isSys ,
+		MODULE_ID as moduleId ,
+		TYPE as type ,
+		CREATED_BY as createdBy ,
+		CREATION_DATE as creationDate ,
+		LAST_UPDATED_BY as lastUpdatedBy ,
+		LAST_UPDATE_DATE as lastUpdateDate 
+	from 
+	   SYS_RESOURCES st
+	where 
+		1=1
+		<if test="sysRes.resourceId!=null and sysRes.resourceId!=''">
+				AND st.RESOURCE_ID = #{sysRes.resourceId}
+		</if>
+		<if test="sysRes.resourcePath!=null and sysRes.resourcePath!=''">
+				AND st.RESOURCE_PATH = #{sysRes.resourcePath}
+		</if>
+		<if test="sysRes.resourceName!=null and sysRes.resourceName!=''">
+				AND st.RESOURCE_NAME = #{sysRes.resourceName}
+		</if>
+		<if test="sysRes.type!=null and sysRes.type!=''">
+				AND (st.TYPE = #{sysRes.type} or st.TYPE='menu')
+		</if>
+	</select>
+	
+	
+	<!-- 如果权限中没有4 的，则添加4 -->
+	<insert id="addSysAuth" parameterType="com.huayu.irla.privilege.manage.vo.SysAuthoritiesVO">
+		INSERT INTO SYS_AUTHORITIES (
+			AUTHORITY_MARK,
+			AUTHORITY_NAME,
+			AUTHORITY_DESC,
+			MESSAGE,
+			ISSYS,
+			MODULE_ID,
+			TYPE,
+			CREATED_BY,
+			CREATION_DATE,
+			LAST_UPDATED_BY,
+			LAST_UPDATE_DATE,
+			ENABLE
+		) VALUES(
+			#{authorityMark},
+			#{authorityName},
+			#{authorityDesc},
+			#{message},
+			#{isSys},
+			#{moduleID},
+			#{type},
+			#{createdBy},
+			SYSDATE(),
+			#{lastUpdatedBy},
+			SYSDATE(),
+			'1'
+		)
+	</insert>
+	
+	<insert id="addSysResource" parameterType="com.huayu.irla.core.privilege.vo.SysResoucesVO">
+		INSERT INTO SYS_RESOURCES (
+			RESOURCE_TYPE,
+			RESOURCE_NAME,
+			RESOURCE_DESC,
+			RESOURCE_PATH,
+			PRIORITY,
+			IS_VALID,
+			ISSYS,
+			MODULE_ID,
+			TYPE,
+			CREATED_BY,
+			CREATION_DATE,
+			LAST_UPDATED_BY,
+			LAST_UPDATE_DATE
+		) VALUES(
+			#{resourceType},  
+			#{resourceName},  
+			#{resourceDesc},  
+			#{resourcePath},  
+			#{priority},     
+			'1',       
+			#{isSys},       
+			#{moduleId},      
+			#{type},        
+			#{createdBy},   
+			SYSDATE(),
+			#{lastUpdatedBy},
+			SYSDATE()
+		)
+	</insert>
+	
+	<insert id="addSysAuthRes" parameterType="com.huayu.irla.core.privilege.vo.SysAuthoritiesResourceVO">
+		INSERT INTO SYS_AUTHORITIES_RESOURCES (
+			resource_Id,
+			authority_Id,
+			created_By,
+			creation_Date,
+			last_Updated_By,
+			last_Update_Date,
+			is_Valid  
+		) VALUES(
+			#{resourceId},  
+			#{authorityId}, 
+			#{createdBy},    
+			SYSDATE(), 
+			#{lastUpdatedBy},
+			SYSDATE(),
+			'1'     
+		)
+	</insert>
+	
+	<delete id="deleteSysResource" parameterType="String">
+		DELETE FROM
+			sys_resources
+		WHERE
+			RESOURCE_ID = #{resourceId jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="deleteSysAuthRes" parameterType="com.huayu.irla.core.privilege.vo.SysAuthoritiesResourceVO">
+		DELETE FROM
+			sys_authorities_resources
+		WHERE
+		<!-- resourceId 不为空则可以删除，不然则报异常 -->
+			<!-- id = #{id jdbcType=VARCHAR} -->
+			<if test="sar.resourceId!=null and sar.resourceId!=''">
+				 RESOURCE_ID = #{sar.resourceId}
+			</if>
+	</delete>
+	
+	
+
+
+</mapper>  

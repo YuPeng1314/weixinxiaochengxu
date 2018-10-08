@@ -1,0 +1,165 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+          http://www.springframework.org/schema/security  
+          http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<security:http pattern="/**/*.css" security="none" />
+	<security:http pattern="/**/*.jpg" security="none" />
+	<security:http pattern="/**/*.jpeg" security="none" />
+	<security:http pattern="/**/*.gif" security="none" />
+	<security:http pattern="/**/*.png" security="none" />
+	<security:http pattern="/**/*.js" security="none" />
+	<security:http pattern="/**/*.woff2" security="none" />
+	<security:http pattern="/**/*.woff" security="none" />
+	<security:http pattern="/**/*.map" security="none" />
+	<security:http pattern="/**/*.ico" security="none" />
+	<security:http pattern="/index.jsp" security="none" />
+	<security:http pattern="/**/login.jsp" security="none" />
+	<security:http pattern="/**/index.html" security="none" />
+	<!-- 登录超时 <security:http pattern="/login/timeout.html" security="none"/> -->
+
+	<security:global-method-security pre-post-annotations="enabled" />
+	<security:http use-expressions="true" entry-point-ref="authenticationProcessingFilterEntryPoint">
+		<security:intercept-url pattern="/login/validate" access="IS_ANONYMOUSLY" />
+		<security:logout success-handler-ref="logoutHandle" logout-url="/logout" />
+		<security:csrf disabled="true" />
+		<security:remember-me services-ref="iealRemember" key="remember-me" />
+
+		<!-- session失效就跳转 <security:session-management invalid-session-url="/html/privilege/login.jsp" /> -->
+		<security:access-denied-handler ref="deniedHandle" />
+		<security:custom-filter ref="loginFilter" position="FORM_LOGIN_FILTER" />
+		<security:custom-filter ref="filterSecurityInterceptor" before="FILTER_SECURITY_INTERCEPTOR" />
+		<security:headers>
+			<security:frame-options disabled="true" />
+		</security:headers>
+	</security:http>
+
+
+
+	<!-- 权限管理 -->
+	<security:authentication-manager alias="authenticationManager" erase-credentials="false">
+		<security:authentication-provider user-service-ref="defaultUserDetailsService">
+			<security:password-encoder base64="true" hash="md5">
+				<security:salt-source system-wide="saltZX" />
+			</security:password-encoder>
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+	<bean id="accessDecisionManager" class="com.huayu.irla.privilege.manage.service.SysAccessDecisionManager" />
+	<bean id="deniedHandle" class="com.huayu.irla.privilege.manage.service.DefaultAccessDeniedHandler" />
+
+	<bean id="filterSecurityInterceptor" class="com.huayu.irla.privilege.manage.filter.CheckSecurityFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="accessDecisionManager" ref="accessDecisionManager" />
+		<property name="securityMetadataSource" ref="securityMetadataSource" />
+		<!-- property name="rejectPublicInvocations" value="true"/> -->
+	</bean>
+
+	<bean id="securityMetadataSource" class="com.huayu.irla.privilege.manage.service.URLFilterInvocationSecurityMetadataSource" />
+
+	<!-- <bean id="securityMetadataSource" class="org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource" -->
+
+	<!-- user password validate -->
+	<bean id="loginFilter" class="com.huayu.irla.privilege.manage.filter.SysUsernamePasswordAuthenticationFilter">
+		<!-- 处理登录的action -->
+		<property name="filterProcessesUrl" value="/login/validate"></property>
+		<property name="authenticationSuccessHandler" ref="loginLogAuthenticationSuccessHandler"></property>
+		<property name="authenticationFailureHandler" ref="simpleUrlAuthenticationFailureHandler"></property>
+		<property name="authenticationManager" ref="authenticationManager"></property>
+		<property name="rememberMeServices" ref="iealRemember"></property>
+		<property name="loginVali" value="true"></property>
+		
+		<!-- session加固并发 -->
+        <property name="sessionAuthenticationStrategy" ref="compositeSessionAuthenticationStrategy"></property>   
+		
+	</bean>
+
+	<bean id="iealRemember" class="com.huayu.irla.privilege.manage.service.IEALPersistentTokenRememberMeServices">
+		<constructor-arg name="key" value="remember-me" />
+		<constructor-arg name="userDetailsService" ref="defaultUserDetailsService" />
+		<property name="tokenValiditySeconds" value="1209600"></property>
+	</bean>
+
+	<!-- 未登录的切入点 -->
+	<bean id="authenticationProcessingFilterEntryPoint" class="com.huayu.irla.privilege.manage.service.DefineLoginUrlAuthenticationEntryPoint">
+		<property name="loginFormUrl" value="/html/privilege/login.jsp"></property>
+	</bean>
+
+	<bean id="loginLogAuthenticationSuccessHandler" class="com.huayu.irla.privilege.manage.service.DefineURLAuthenticationSuccess">
+		<property name="defaultTargetUrl" value="/pages/basic/basicPage.html"></property>
+		<property name="loginURL" value="/html/privilege/login.jsp"></property>
+	</bean>
+
+	<bean id="simpleUrlAuthenticationFailureHandler" class="com.huayu.irla.privilege.manage.service.DefineURLAuthenticationFailure">
+		<!-- 可以配置相应的跳转方式。属性forwardToDestination为true采用forward false为sendRedirect -->
+		<property name="defaultFailureUrl" value="/html/privilege/login.jsp"></property>
+	</bean>
+
+
+	<!-- Jcaptcha相关的配置 -->
+	<bean id="captchaService" class="com.octo.captcha.service.image.DefaultManageableImageCaptchaService">
+		<property name="captchaEngine">
+			<bean class="com.huayu.irla.privilege.manage.service.GMailEngine" />
+		</property>
+		<!-- 默认生成的图片180秒过期 , 可另行设置 <property name="minGuarantedStorageDelayInSeconds" value="180" /> -->
+	</bean>
+
+	<!-- logout 登出逻辑 -->
+	<bean id="logoutHandle" class="com.huayu.irla.privilege.manage.service.DefineLogoutHandler">
+		<property name="defaultTargetUrl" value="/html/privilege/login.jsp"></property>
+	</bean>
+
+	<!-- 判断页面按钮权限 -->
+	<bean id="webInvocationPrivilegeEvaluator" class="org.springframework.security.web.access.DefaultWebInvocationPrivilegeEvaluator">
+		<constructor-arg name="securityInterceptor">
+			<ref local="filterSecurityInterceptor" />
+		</constructor-arg>
+	</bean>
+	 <!-- 用户信息初始化 -->
+    <bean id="defaultUserDetailsService" class="com.huayu.irla.privilege.manage.service.DefaultUserDetailsService">
+    	<property name="ausTypes">
+    	   <list>
+    	     <value>menu</value>
+    	      <value>admin</value>
+    	   </list>
+    	</property>
+    </bean>
+    
+    <!-- session加固和并发控制 -->
+   <bean id="compositeSessionAuthenticationStrategy" class="org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy">    
+    <constructor-arg>    
+        <list>    
+            <bean id="concurrentSessionControlAuthenticationStrategy" class="org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy">    
+                <constructor-arg ref="sessionRegistry"/>    
+                <property name="maximumSessions" value="1"></property> <!-- 同一个用户最多允许好多少个session -->    
+		        <!-- exceptionIfMaximumExceeded, 当超过最大session数时:  
+		            true: 不允许新session, 保持旧session  
+		            false: 销毁旧session, 新session生效  
+		        -->  
+                <property name="exceptionIfMaximumExceeded" value="false"></property>  
+               
+            </bean>   
+            <bean id="sessionFixationProtectionStrategy" class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy">    
+            </bean> 
+            <bean id="registerSessionAuthenticationStrategy" class="org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy">    
+                <constructor-arg ref="sessionRegistry"/>    
+            </bean>    
+        </list>    
+     </constructor-arg>    
+	</bean>    
+    
+	<bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl"/> 
+
+	<bean id="concurrencySessionFilter" class="org.springframework.security.web.session.ConcurrentSessionFilter">  
+	    <constructor-arg name="sessionRegistry" ref="sessionRegistry" />  
+	    <constructor-arg name="sessionInformationExpiredStrategy" ref="simpleSessionInfo"/>  
+	</bean>   
+	
+   <bean id="simpleSessionInfo" class="com.huayu.irla.privilege.manage.service.DefineRedirectSessionExpiredStrategy">
+   	 <constructor-arg name="invalidSessionUrl" value="/"/>
+   </bean>
+	<!-- end -->
+</beans>
+	

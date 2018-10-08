@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.phiz.IPhizDao">
+	<select id="getPhizList" parameterType="com.huayu.irla.core.phiz.vo.PhizVO" resultType="com.huayu.irla.core.phiz.vo.PhizVO">
+		SELECT
+		  p.id               AS phizId,
+		  p.img_name         AS imgName,
+		  p.img_address      AS imgAddress,
+		  p.holiday_code     AS holidayCode,
+		  p.is_valid         AS isValid,
+		  p.created_by       AS createdBy,
+		  p.creation_date    AS creationDate,
+		  p.last_updated_by  AS lastUpdatedBy,
+		  p.last_update_date AS lastUpdateDate,
+		  p.description      AS description,
+		  p.is_recommend     AS isRecommend,
+		  p.theme_code       AS themeCode,
+		  h.holiday_name     AS holidayName,
+		  T.theme_name       AS themeName
+		FROM irla_phiz_t p
+		  LEFT JOIN irla_holiday_t h
+		    ON p.holiday_code = h.holiday_code
+		  LEFT JOIN irla_theme_t t
+		    ON P.theme_code = T.theme_code
+		WHERE 1=1
+		<if test="phiz.phizId != null and phiz.phizId != ''">
+			AND p.id = #{phiz.phizId}
+		</if>
+		<if test="phiz.holidayCode != null and phiz.holidayCode != ''">
+			AND p.holiday_code = #{phiz.holidayCode}
+		</if>
+		<if test="phiz.themeCode != null and phiz.themeCode != ''">
+			AND p.theme_code = #{phiz.themeCode}
+		</if>
+		<if test="phiz.isValid != null and phiz.isValid != ''">
+			AND p.is_valid = #{phiz.isValid}
+		</if>
+		<if test="phiz.isRecommend != null and phiz.isRecommend != ''">
+			AND p.is_recommend = #{phiz.isRecommend}
+		</if>
+		<if test="phiz.description != null and phiz.description != ''">
+			AND p.description like  CONCAT('%',#{phiz.description},'%')
+		</if> 
+		ORDER BY p.id
+		<if test="phiz.offset!=null and phiz.limit !=null">
+			LIMIT
+			#{phiz.offset,jdbcType=INTEGER},#{phiz.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="getPhizCount" resultType="int" parameterType="com.huayu.irla.core.phiz.vo.PhizVO">
+		SELECT
+		  COUNT(1)
+		FROM irla_phiz_t
+		where 1=1
+		<if test="phiz.holidayCode != null and phiz.holidayCode != ''">
+			AND holiday_code = #{phiz.holidayCode}
+		</if>
+		<if test="phiz.themeCode != null and phiz.themeCode != ''">
+			AND theme_code = #{phiz.themeCode}
+		</if>
+		<if test="phiz.isValid != null and phiz.isValid != ''">
+			AND is_valid = #{phiz.isValid}
+		</if>
+		<if test="phiz.isRecommend != null and phiz.isRecommend != ''">
+			AND is_recommend = #{phiz.isRecommend}
+		</if>
+	</select>
+	<insert id="addPhiz" parameterType="com.huayu.irla.core.phiz.vo.PhizVO">
+		INSERT INTO irla_phiz_t
+		            (holiday_code,
+		             theme_code,
+		             img_name,
+		             img_address,
+		             is_valid,
+		             is_recommend,
+		             created_by,
+		             creation_date,
+		             last_updated_by,
+		             last_update_date,
+		             description)
+		VALUES (#{phiz.holidayCode},
+				#{phiz.themeCode},
+				#{phiz.imgName},
+				#{phiz.imgAddress},
+		        "1",
+		        #{phiz.isRecommend},
+		        #{phiz.createdBy},
+		        SYSDATE(),
+		        #{phiz.lastUpdatedBy},
+		        SYSDATE(),
+		        #{phiz.description})
+	</insert>
+	<update id="updatePhiz" parameterType="com.huayu.irla.core.phiz.vo.PhizVO">
+		UPDATE irla_phiz_t
+		SET holiday_code = #{phiz.holidayCode},
+			theme_code = #{phiz.themeCode},
+		<if test="phiz.isValid != null and phiz.isValid != ''">
+			is_valid = #{phiz.isValid},
+		</if>
+		  is_recommend = #{phiz.isRecommend},
+		  last_updated_by = #{phiz.lastUpdatedBy},
+		  last_update_date = SYSDATE(),
+		  description = #{phiz.description}
+		WHERE id = #{phiz.phizId}
+	</update>
+	<delete id="delPhiz" parameterType="int">
+		DELETE
+		FROM irla_phiz_t
+		WHERE id = #{id}
+	</delete>
+</mapper>

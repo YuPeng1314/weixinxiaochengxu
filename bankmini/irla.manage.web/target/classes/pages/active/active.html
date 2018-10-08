@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>活动管理</title>
+<script src="/ietlAdmin/js/active/active.js"></script>
+<style type="text/css" rel="stylesheet">
+.lable{
+	float: left;
+    width: 15%;
+    height: 56px;
+    line-height: 56px;
+    text-align: right;
+}
+.col-sm-6{
+	width: 50%
+}
+.col-sm-6>i{
+	top: 10px;
+	right: 25px;
+}
+</style>
+</head>
+<body>
+	<form id="searchFrom" class="form-horizontal" role="form">
+		<div class="form-group container">
+			<div class="row">
+				<label class="col-sm-2" style="width: auto; margin-top: 6px" for=""><span id="searchSpan">活动名称</span>:</label>
+				<div class="col-sm-2">
+					<input type="text" class="form-control" name="" id="activeNameSrh" placeholder="请输入....">
+				</div>
+				<div class="col-sm-4">
+					<input type="button" class="btn btn-primary" id="search" onclick="activemanage.initTable();" value="查询" />
+					<input type="button" class="btn btn-primary" id="empty" onclick="activemanage.emptySearch();" value="清空" /> 
+					<input type="button" class="btn btn-info" onclick="activemanage.addActivebtn();" value="添加活动" id="addDomain" />
+				</div>
+			</div>
+		</div>
+		<input type="text" value="解决bootstrap与AJAX异步提交表单的冲突" hidden />
+		<div id="cataCount" style="display: inline">
+			<div style="margin-bottom: 10px">
+				&ensp;当前总数为：<font id="typeCount" color="red"></font>
+			</div>
+		</div>
+	</form>
+	<!-- 显示列表 -->
+	<table id="typemanege_table"></table>
+	<!-- 活动维护 -->
+	<div id="activeModal" class="modal fade" data-backdrop="static" role="dialog">
+		<div class="modal-dialog" style="width: 800px; height: 800px">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">活动维护</h4>
+				</div>
+				<div class="modal-body">
+					<form role="form" class="form-horizontal" id="activeForm">
+						<input id="activeCode" name="activeCode" type="text" style="display: none">
+						<div class="form-group">
+							<label class="lable">活动名称&nbsp;*</label>
+							<div class="col-sm-6">
+								<input type="text" class="form-control" id="activeName" name="activeName">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="lable">活动种类&nbsp;*</label>
+							<div class="col-sm-6">
+								<select type="select" class=" form-control" id="kinds" name="kinds">
+									<option value='' selected='selected'>请选择</option>
+									<option value='0' selected='selected'>官方</option>
+									<option value='1' selected='selected'>社区</option>
+								</select> 
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="lable">是否热门&nbsp;*</label>
+							<div class="col-sm-6">
+								<select type="select" class=" form-control" id="isHot" name="isHot">
+									<option value='' selected='selected'>请选择</option>
+									<option value='0' selected='selected'>非热门</option>
+									<option value='1' selected='selected'>热门</option>
+								</select> 
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="lable">描述</label>
+							<div class="col-sm-6">
+								<input type="textarea" class="form-control" id="description" name="description">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="lable">活动内容&nbsp;*</label>
+							<div class="col-sm-6">
+								<input type="textarea" class="form-control" id="content" name="content">
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" onclick="activemanage.optActive();">确定</button>
+					<button type="button" class="btn btn-default" onclick="activemanage.empty()">清空</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+	
+		</div>
+	</div>
+	<!-- 图片维护 -->
+	<div id="areaImgModal" class="modal fade" data-backdrop="static" role="dialog">
+		<div class="modal-dialog" style="width: 800px; height: 800px">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">图片维护</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form" id="areaImgForm">
+						<input id="id_img" name="id" type="text" style="display: none">
+						<div class="form-group">
+							<label class="col-sm-2 control-label"  for="name">类别图片<font color="red">&ensp;*</font></label> 
+							<div class="col-sm-6" id="imgUploadDivId">
+				       			<input id="img_upload" name="files" type="file" class="file-loading">
+				       			<font color="red">&nbsp;&nbsp;(仅支持jpg,png格式)</font>
+					       	</div>
+					       	<div class="col-sm-6" id="viewImgId">
+					       		<img  id="testimgname" src=""  class="kv-preview-data file-preview-image" style="width:auto;height:100px;">
+					       		&nbsp;&nbsp;<button id="delImgText" class="btn btn-danger btn-xs" title="点此更换图片" onclick="activemanage.initUploadImg()" style="vertical-align:top"></button>
+					       	</div></br>
+					       	<span id="remarkImgId" style="display: none"></span>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" onclick="activemanage.uploadEqpImg()">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>课程节数管理</title>
+<script src="/ietlAdmin/js/courseManage/courseManage.js"></script>
+<script src="/ietlAdmin/js/sectionCourse/sectionCourse.js"></script>
+<script type="text/javascript">
+$(function(){
+	$('#catalogName').empty();
+	$('#catalogName').append("<option value='' selected='selected' style='text-align:center;'>--------加载中--------</option>");
+	coursemanage.courseOption();
+	$('#catalogName').change(function(){
+		$('#category_code').empty();
+		$('#category_code').append("<option value='' selected='selected' style='text-align:center;'>--------加载中--------</option>");
+		coursemanage.categoryOption($(this).val());
+	});
+	$('#category_code').change(function(){
+		$('#courseName').empty();
+		$('#courseName').append("<option value='' selected='selected' style='text-align:center;'>--------加载中--------</option>");
+		section.option($(this).val());
+	});
+});
+</script>
+<style type="text/css" rel="stylesheet">
+.col-sm-6{
+	width: 16%;
+}
+</style>
+</head>
+<body>
+	<form id="searchFrom" class="form-horizontal" role="form">
+		<div class="form-group container" style="width: 100%;">
+			<div class="row">
+				<label class="col-sm-2" style="width: auto; margin-top: 6px" for=""><span id="searchSpan">目录名称</span>:</label>
+				<div class="col-sm-6">
+					<select type="select" class=" form-control" id="catalogName" name="catalogName"></select> 
+				</div>
+				<label class="col-sm-2" style="width: auto; margin-top: 6px" for=""><span id="searchSpan">类别名称</span>:</label>
+				<div class="col-sm-6">
+					<select type="select" class=" form-control" id="category_code" name="category_code"></select> 
+				</div>
+				<label class="col-sm-2" style="width: auto; margin-top: 6px" for=""><span id="searchSpan">课程名称</span>:</label>
+				<div class="col-sm-6">
+					<select type="select" class=" form-control" id="courseName" name="courseName"></select> 
+				</div>
+				<div class="col-sm-4">
+					<input type="button" class="btn btn-primary" id="search" value="查询" />
+					<input type="button" class="btn btn-primary" id="empty" value="清空" /> 
+					<input type="button" class="btn btn-info" value="保存" id="save" />
+				</div>
+			</div>
+		</div>
+		<input type="text" value="解决bootstrap与AJAX异步提交表单的冲突" hidden />
+		<div id="courseCount" style="display: none">
+			<div style="margin-bottom: 10px">
+				<font color="red">&ensp;修改排列序号时，输入数字为正整数且不能大于当前总数！</font>
+			</div>
+			<div style="margin-bottom: 10px">
+				&ensp;当前总数为：<font id="typeCount" color="red"></font>
+			</div>
+		</div>
+	</form>
+	<table id="section_table"></table>
+</body>
+</html>

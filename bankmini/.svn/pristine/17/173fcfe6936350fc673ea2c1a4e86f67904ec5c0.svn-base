@@ -1,0 +1,123 @@
+@CHARSET "UTF-8";
+
+#main-nav {
+	margin-left: 1px;
+}
+
+.privilege-hints {
+	display:none !important;
+}
+
+.bootstrap-switch-privilege-hints {
+	display:none !important;
+}
+
+#main-nav.nav-tabs.nav-stacked>li>a {
+	padding: 10px 8px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #4A515B;
+	background: #E9E9E9;
+	background: -moz-linear-gradient(top, #FAFAFA 0%, #E9E9E9 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FAFAFA),
+		color-stop(100%, #E9E9E9));
+	background: -webkit-linear-gradient(top, #FAFAFA 0%, #E9E9E9 100%);
+	background: -o-linear-gradient(top, #FAFAFA 0%, #E9E9E9 100%);
+	background: -ms-linear-gradient(top, #FAFAFA 0%, #E9E9E9 100%);
+	background: linear-gradient(top, #FAFAFA 0%, #E9E9E9 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FAFAFA',
+		endColorstr='#E9E9E9');
+	-ms-filter:
+		"progid:DXImageTransform.Microsoft.gradient(startColorstr='#FAFAFA', endColorstr='#E9E9E9')";
+	border: 1px solid #D5D5D5;
+	border-radius: 4px;
+}
+
+#main-nav.nav-tabs.nav-stacked>li>a>span {
+	color: #7c3d29;
+}
+
+#main-nav.nav-tabs.nav-stacked>li.active>a, #main-nav.nav-tabs.nav-stacked>li>a:hover
+	{
+	color: #ffffff;
+	background:rgb(81,163,219);
+	
+	/* background: -moz-linear-gradient(top, #4A515B 0%, #3C4049 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #4A515B),
+		color-stop(100%, #3C4049));
+	background: -webkit-linear-gradient(top, #4A515B 0%, #3C4049 100%);
+	background: -o-linear-gradient(top, #4A515B 0%, #3C4049 100%);
+	background: -ms-linear-gradient(top, #4A515B 0%, #3C4049 100%);
+	background: linear-gradient(top, #4A515B 0%, #3C4049 100%); */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4A515B',
+		endColorstr='#3C4049');
+	-ms-filter:
+		"progid:DXImageTransform.Microsoft.gradient(startColorstr='#4A515B', endColorstr='#3C4049')";
+	/* border-color: #2B2E33; */
+}
+
+#main-nav.nav-tabs.nav-stacked>li.active>a, #main-nav.nav-tabs.nav-stacked>li>a:hover>span
+	{
+	color: #FFF;
+}
+
+#main-nav.nav-tabs.nav-stacked>li {
+	margin-bottom: 4px;
+}
+
+/*定义二级菜单样式*/
+.secondmenu a {
+	font-size: 10px;
+	color: #4A515B;
+	text-align: center;
+}
+
+.navbar-static-top {
+	background-color: rgb(81,163,219);
+	margin-bottom: 5px;
+}
+
+.navbar-brand {
+	background: url('') no-repeat 10px 8px;
+	display: inline-block;
+	vertical-align: middle;
+	padding-left: 50px;
+	color: #fff;
+}
+
+.ico_a:hover {
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.valid_a {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.invalid_a {
+	cursor: text;
+	text-decoration: none;
+}
+
+.invalid_a:hover {
+	cursor: text;
+	text-decoration: none;
+}
+
+.main_content {
+}
+
+.priviImage {
+	background-image:url('/ietlAdmin/img/loading.gif');
+    background-position:50% 50%;
+    width:100%;
+    height:100%;
+    position:absolute;
+    top:0%;
+    left:0%;
+    background-repeat:no-repeat;
+    opacity:0.8;
+    display:block;
+    background-color: #eceaea;
+}

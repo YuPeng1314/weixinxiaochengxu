@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.manage.dao.menu.IUserMuneAuthDao">
+
+	<resultMap type="com.huayu.irla.core.privilege.vo.SysUserRoleVO" id="sysUserRoleVO" />
+	<parameterMap type="com.huayu.irla.core.privilege.vo.SysUserRoleVO" id="sysUserRoleVO" />
+
+	<select id="findRoleByUser" resultMap="sysUserRoleVO" parameterMap="sysUserRoleVO">
+		SELECT
+			UR_ID as urId,
+			ROLE_ID as roleId,
+			USER_ID as userId,
+			CREATED_BY as createdBy,
+			CREATION_DATE as creationDate,
+			LAST_UPDATED_BY as lastUpdatedBy,
+			LAST_UPDATE_DATE as lastUpdateDate,
+			IS_VALID as isValid
+		FROM
+			SYS_USERS_ROLES
+		WHERE
+		 1=1
+		<if test="sysUserRole.userId!=null and sysUserRole.userId!=''">
+			AND USER_ID = #{sysUserRole.userId}
+		</if>
+	</select>
+
+	<resultMap type="com.huayu.irla.core.privilege.vo.SysRoleAuthVO" id="SysRoleAuthVO" />
+	<parameterMap type="com.huayu.irla.core.privilege.vo.SysRoleAuthVO" id="SysRoleAuthVO" />
+	
+	<select id="findAuthByRole" resultMap="SysRoleAuthVO" parameterMap="SysRoleAuthVO">
+		SELECT
+			ID as id ,
+			AUTHORITY_ID as authorityId ,
+			ROLE_ID as roleId ,
+			CREATED_BY as createdBy ,
+			CREATION_DATE as creationDate ,
+			LAST_UPDATED_BY as
+			lastUpdatedBy ,
+			LAST_UPDATE_DATE as lastUpdateDate ,
+			IS_VALID as isValid
+		FROM
+			SYS_ROLES_AUTHORITIES
+		WHERE
+		 1=1
+		 <if test="sysRoleAuth.roleId!=null and sysRoleAuth.roleId!=''">
+			and ROLE_ID = #{sysRoleAuth.roleId}
+		</if>
+	</select>
+	
+	<resultMap type="com.huayu.irla.core.privilege.vo.SysAuthoritiesResourceVO" id="sysAuthoritiesResourceVO" />
+	<parameterMap type="com.huayu.irla.core.privilege.vo.SysAuthoritiesResourceVO" id="sysAuthoritiesResourceVO" />
+	
+	<select id="findAuthResByAuth" parameterMap="sysAuthoritiesResourceVO" resultMap="sysAuthoritiesResourceVO">
+	SELECT
+		ID as id ,
+		RESOURCE_ID as resourceId ,
+		AUTHORITY_ID as authorityId ,
+		CREATED_BY as createdBy ,
+		CREATION_DATE as creationDate ,
+		LAST_UPDATED_BY as lastUpdatedBy ,
+		LAST_UPDATE_DATE as lastUpdateDate ,
+		IS_VALID as isValid
+	FROM
+		SYS_AUTHORITIES_RESOURCES
+	WHERE
+	    1=1
+		<if test="sysAuthRes.authorityId!=null and sysAuthRes.authorityId!=''">
+			AND AUTHORITY_ID = #{sysAuthRes.authorityId}
+		</if>
+	</select>
+
+
+</mapper>

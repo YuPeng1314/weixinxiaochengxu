@@ -1,0 +1,134 @@
+<script src="/ietlAdmin/js/courseware/coursewareedit.js"></script>
+<script type="text/javascript">
+$(function() {
+    courseEdit.initTable();
+});
+</script>
+<div class="panel-group">
+<div class="panel panel-info">
+    <div class="panel-body">
+<!-- 视频展示面板 -->
+<div  class="panel panel-success">
+<br>
+
+<form id="searchFrom"  class="form-horizontal" role="form"	>
+     <div class="form-group">
+	        <label class="col-sm-2" style="width: auto; margin-top: 6px;margin-left: 10px" for="search">搜索</label>
+			<div class="col-sm-2">
+                  <input type="text" name="search" id="resource_name_search"  class="form-control"  placeholder="请输入资源名称...." >
+			</div> 
+			
+			<label class="col-sm-2" style="width: auto; margin-top: 6px;margin-left: 10px" for="search">资源是否公开</label>
+			<div class="col-sm-2">
+                  <select id="isSearchPublic" name="isSearchPublic" class="form-control">
+                    <option value="" selected="selected">----</option>
+					<option value="1" >公开</option>
+					<option value="0" >收费</option>
+				</select>
+			</div> 
+			
+			<div class="col-sm-2"> 
+			     <input type="button" class="btn btn-primary " id = "search" onclick="courseEdit.searchBtn()" value = "查询"/>
+			     <input type="button" class="btn btn-primary " id = "rest" onclick="courseEdit.restBtn()" value = "清空"/>
+	        </div>
+	 </div>
+	 <input type="text" value="解决bootstrap与AJAX异步提交表单的冲突" hidden />
+</form>
+
+<table id="courseShow_table"></table>
+
+</div>
+</div>
+</div>
+</div>
+
+<div id="updateCourseModal" class="modal fade" data-backdrop="static" role="dialog">
+		<div class="modal-dialog" style="width: 900px;height: 800px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">资源维护</h4>
+				</div>
+				<div class="modal-body">
+				<form  class="form-horizontal"  role="form"  id="updateCourseForm">
+				<input id="resource_Id" name="resourceId" type="text" style="display: none">
+				
+				<div class="form-group">
+					<label class="col-md-2 control-label">选择课程<font
+						color="red">&ensp;*</font></label>
+						
+					<div class="col-md-5">
+						<div style="width: 400px">
+							<div class="input-group clearCircle">
+								<input class="nodeName form-control" id="fileCatalogName"
+									name="fileCatalogName" type="text"
+									class="form-control clearCircle" readonly="readonly"
+									placeholder="请选择对应的目录"></input> <span
+									class="input-group-btn">
+									<button id="choseCatalogName"
+										class="btn btn-default clearCircle" type="button">
+										<span class="glyphicon glyphicon-chevron-down"></span>
+									</button>
+								</span>
+							</div>
+							<input type="text" class="nodeValue form-control"
+								id="fileCatalogCode" name="courseCode"
+								style="display: none;"></input>
+							<div id="treeCatalog"
+								style="display: none; width: 400px; z-index: 1000; position: absolute;"></div>
+						</div>
+					</div>
+					<div class="col-md-2">
+						<button style="margin-left:80px" type="button" class="btn btn-default"
+							onclick="courseEdit.restVal()">清空</button>
+					</div>
+				</div>
+				
+				
+				
+				<div class="form-group">
+						<label class="col-sm-2 control-label"  for="name">是否公开<font color="red">&ensp;*</font></label> 
+						<div class="col-sm-3">
+						<select id="isPublic" name="isPublic" class="form-control">
+							<option value="1">公开</option>
+							<option value="0">收费</option>
+						</select>
+					</div>
+					</div>
+				
+				
+				<div class="form-group">
+						<label class="col-sm-2 control-label"  for="name">资源封面</label> 
+						<div class="col-sm-6" id="imgUploadDivId">
+				       			<input id="img_upload" name="files" type="file" class="file-loading">
+				       			<font color="red">&nbsp;&nbsp;(仅支持jpg,png格式)</font>
+				       		</div>
+				       		<div class="col-sm-6" id="viewImgId">
+				       		<img  id="testimgname" src=""  class="kv-preview-data file-preview-image" style="width:auto;height:100px;">
+				       		&nbsp;&nbsp;<button id="delImgText" class="btn btn-danger btn-xs" title="点此更换图片" onclick="courseEdit.delServerImg()" style="vertical-align:top"></button>
+				       		</div></br>
+				       		<span id="remarkImgId" style="display: none"></span>
+					</div>
+				
+				
+
+				</form>
+			</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" onclick="courseEdit.uploadMoreFile()">确定</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+                          
+
+
+	
+
+	
+
+

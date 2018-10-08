@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huayu.irla.core.dao.holiday.IHolidayDao">
+	<select id="getHolidayList" parameterType="com.huayu.irla.core.holiday.vo.HolidayVO" resultType="com.huayu.irla.core.holiday.vo.HolidayVO">
+		SELECT
+		  id AS Id,
+		  holiday_code AS holidayCode,
+		  holiday_name AS holidayName,
+		  holiday_img AS holidayImg,
+		  is_valid AS isValid,
+		  created_by AS createdBy,
+		  creation_date AS creationDate,
+		  last_updated_by AS lastUpdatedBy,
+		  last_update_date AS lastUpdateDate,
+		  description AS description
+		FROM irla_holiday_t
+		where 1=1
+		<if test="holiday.Id != null and holiday.Id != '' ">
+			AND id = #{holiday.Id}
+		</if>
+		<if test="holiday.holidayCode != null and holiday.holidayCode != '' ">
+			AND holiday_code = #{holiday.holidayCode}
+		</if>
+		<if test="holiday.holidayName != null and holiday.holidayName != '' ">
+			AND holiday_name like  CONCAT('%',#{holiday.holidayName},'%')
+		</if>
+		<if test="holiday.isValid != null and holiday.isValid != '' ">
+			AND is_valid = #{holiday.isValid}
+		</if>
+		ORDER BY id
+		<if test="holiday.offset!=null and holiday.limit !=null">
+			LIMIT
+			#{holiday.offset,jdbcType=INTEGER},#{holiday.limit,jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="getHolidayCount" resultType="int" parameterType="com.huayu.irla.core.holiday.vo.HolidayVO">
+		SELECT
+		  COUNT(1)
+		FROM irla_holiday_t
+		where 1=1
+		<if test="holiday.isValid != null and holiday.isValid != '' ">
+			AND is_valid = #{holiday.isValid}
+		</if>
+	</select>
+	<insert id="addHoliday" parameterType="com.huayu.irla.core.holiday.vo.HolidayVO">
+		INSERT INTO irla_holiday_t
+		            (holiday_code,
+		             holiday_name,
+		             holiday_img,
+		             is_valid,
+		             created_by,
+		             creation_date,
+		             last_updated_by,
+		             last_update_date,
+		             description)
+		VALUES ((concat('H', cast(nextval('holiday_code') as char))),
+		        #{holiday.holidayName},
+		        #{holiday.holidayImg},
+		        #{holiday.isValid},
+		        #{holiday.createdBy},
+		        SYSDATE(),
+		        #{holiday.lastUpdatedBy},
+		        SYSDATE(),
+		        #{holiday.description})
+	</insert>
+	<update id="updateHoliday" parameterType="com.huayu.irla.core.holiday.vo.HolidayVO">
+		UPDATE irla_holiday_t
+		SET holiday_name = #{holiday.holidayName},
+		<if test="holiday.holidayImg != null and holiday.holidayImg != '' ">
+			holiday_img = #{holiday.holidayImg},
+		</if>
+			is_valid = #{holiday.isValid},
+			last_updated_by = #{holiday.lastUpdatedBy},
+			last_update_date = SYSDATE(),
+			description = #{holiday.description}
+		WHERE id = #{holiday.Id}
+		OR holiday_code = #{holiday.holidayCode}
+	</update>
+	<delete id="delHoliday" parameterType="int">
+		DELETE
+		FROM irla_holiday_t
+		WHERE id = #{holiday.Id}
+	</delete>
+</mapper>
